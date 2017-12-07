@@ -1,0 +1,26 @@
+table{
+	width: 100%;
+}
+.tr_title{
+	height: 3em;	
+    background: linear-gradient(#f6f6f6, #efefef), #dddddd;
+	border-bottom: 1px solid #DDDDDD;
+	font-size: 0.8em;
+}
+.tr_content{
+	height: 3em; 
+	font-size: 0.75em;
+	background: #ffffff; 	
+    box-shadow: rgba(0, 0, 0, 0) 0 2px 5px, inset rgba(218, 218, 218, 0.44) 0 3px 6px;
+	border-bottom: 1px solid #DDDDDD;
+}
+.tr_content td{
+	text-align: center;
+}
+.lock_font{
+	font-size: 200%; color: #ca0000;
+}
+.unlock_font{
+	font-size: 200%; color: #00bd4d;
+}
+

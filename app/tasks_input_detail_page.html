@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+    <title>任务列表</title>
+    <script src="../js/mui.min.js"></script>
+	<script src="../js/vue.min.js"></script>
+	<script src="../js/jquery-2.1.4.min.js"></script> 
+	<script src="../js/app.js"></script> 
+	<script type="text/javascript" src="../js/mui.picker.js" ></script>
+	<script type="text/javascript" src="../js/mui.poppicker.js" ></script>
+    <link href="../css/mui.css" rel="stylesheet"/> 
+    <link href="../css/app.css" rel="stylesheet"/> 
+    <link href="../css/tasks_page.css" rel="stylesheet"/> 
+    <link href="../css/font-awesome-4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="../css/mui.picker.min.css" />
+    <link rel="stylesheet" href="../css/mui.poppicker.css" />
+    <style>
+    
+	
+    </style>
+</head>
+<body>
+	<div id="task_input_detail_content">
+		
+	<header class="mui-bar mui-bar-nav top_title" >
+		<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+		<h1 class="mui-title">已锁定钢印号清单</h1>
+		<i class="fa fa-pencil-square" @tap="inputSelectPage()" style="font-size: 1.7em; color: #ffffff; margin: 0.2em; float: right;"></i>
+	
+	</header>
+ 
+   
+ 
+	<div id="item1" class=" mui-content "  >
+		 <table >
+		 	<tr class="tr_title">
+		 		<th>工序流转卡号</th>
+		 		<th>图号</th>
+		 		<th>品名</th>
+		 		<th>数量</th>
+		 		<th>检查完成</th>
+		 		<th>接受时间</th>
+		 	</tr>
+		 	<tr class="tr_content" v-for="item in taskList">
+		 		<td>{{item.ProcessFlow_CD}}</td>
+		 		<td>{{item.Fnumber}}</td>
+		 		<td>{{item.FName}}</td>
+		 		<td>{{item.TaskCount}}</td>
+		 		<td>{{item.FinishCount}}</td>
+		 		<td>{{item.ReceiveDttm}}</td>
+		 	</tr>
+		 </table>
+		 
+		 
+		 <table >
+		 	<tr class="tr_title">
+		 		<th width="20%">钢印号 </th>
+		 		<th width="20%">测量者</th>
+		 		<th width="20%">结果</th>
+		 		<th width="20%">完成时间</th>
+		 		<th width="20%"><input type="checkbox" class="ck_common" v-model="checkAllFlag" @click="CheckAll()" ></th>
+		 	</tr>
+		 	<tr class="tr_content" v-for="detailItem in taskDetailList">
+		 		<td>{{detailItem.Model}}</td>
+		 		<td>{{detailItem.LockUser}}</td>
+		 		<td>{{detailItem.CheckResult}}</td>
+		 		<td>{{detailItem.FinishDttm}} </td>
+		 		<td>
+		 			 <input type="checkbox" class="ck_common" :value="detailItem.ID" v-model="selectItemIds">
+		 		</td>
+		 	</tr>
+		 </table>
+		 
+	</div>
+	
+ 
+</div>
+<script type="text/javascript" charset="UTF-8">
+  	mui.init(); 
+	
+  	var vm_task_input_detail = new Vue({
+		el: '#task_input_detail_content',
+		data: {
+			checkAllFlag:false,
+			selectItemIds:[],
+			taskSearchInfo:{
+				command:"detail",
+				message:"",
+				data:""
+			},
+			userInfo:{
+				LoginUser:"user2",
+				LoginNumber:1554,
+				GroupName:'检查组长'
+			},
+			taskList:[//
+//			{
+//				FName:"平衡圈",
+//				FNumber:"2.3220-M510-0400",
+//				FinishCount:1,
+//				ProcessFlow_CD:"FC1705374",
+//				ReceiveDttm:"2017-11-24 19:53:57",
+//				ReceiveNumber:"1554",
+//				ReceiveUser:"user2", 
+//				TaskCount:6
+//			},
+			],
+			taskDetailList:[]
+		},computed: {
+		    isAdmin:function(){
+		    	return this.userInfo.GroupName=='检查组长';
+		    } 
+		    
+		},
+		methods:{
+			CheckAll:function(){
+				if(this.checkAllFlag){
+					for(var i=0;i<this.taskDetailList.length;i++){
+						this.selectItemIds.push(this.taskDetailList[i].ID);
+					}
+				}else{
+					this.selectItemIds=[];
+				}
+				return this.checkAllFlag;
+		    }
+		}
+	});
+	
+	
+	mui.ready(function(){
+		vm_task_input_detail.userInfo = app.getState();
+		getTaskDetail();
+	});
+	
+   
+	function  getTaskDetail(){
+		var userInfo = app.getState();
+		var searchData=userInfo;
+		var selectTask=app.getPageParam("$selectInputTaskItem");
+		vm_task_input_detail.taskList=[];
+		vm_task_input_detail.taskList.push(selectTask);
+		searchData.ProcessFlow_CD=selectTask.ProcessFlow_CD;
+		vm_task_input_detail.taskSearchInfo.command="detail";
+		vm_task_input_detail.taskSearchInfo.data=""+JSON.stringify(searchData);
+			app.postTaskList(vm_task_input_detail.taskSearchInfo,function(data){
+			if(data.code==1){
+				var dataList = data.data; // 目前没数据先模拟数据。
+				console.info(dataList);
+				vm_task_input_detail.taskDetailList=JSON.parse(dataList);
+			 	pageIndex=1;
+			}else{
+				mui.toast(data.msg);
+			}
+		});
+	}
+	window.onload=function(){
+//		courseId = $.query.get("courseId"); 
+//		classId = $.query.get("classId");
+//		console.info("courseId:  "+courseId);
+//		console.info("classId:  "+classId);
+		
+	}
+	 
+	function inputSelectPage(){
+		
+		window.location.href="tasks_input_select.html";
+	}
+	
+</script>
+</body>
+</html>

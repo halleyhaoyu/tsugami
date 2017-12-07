@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+    <title>接收任务列表</title>
+    <script src="../js/mui.min.js"></script>
+	<script src="../js/vue.min.js"></script>
+    <link href="../css/mui.css" rel="stylesheet"/> 
+    <link href="../css/app.css" rel="stylesheet"/> 
+    <link href="../css/tasks_page.css" rel="stylesheet"/> 
+    <style>
+    
+	
+    </style>
+</head>
+<body>
+	<div id="task_input_list_content">
+		
+	<header class="mui-bar mui-bar-nav top_title" >
+		<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+		<h1 class="mui-title">接收任务清单</h1>
+	</header>
+ 
+   
+ 
+	<div id="item1" class=" mui-content "  >
+		 <table >
+		 	<tr class="tr_title">
+		 		<th>工序流转卡号</th>
+		 		<th>图号</th>
+		 		<th>品名</th>
+		 		<th>数量</th>
+		 		<th>检查完成</th>
+		 		<th>接受时间</th>
+		 	</tr>
+		 	<tr class="tr_content" v-for="item in taskList" @tap="openTaskInputDetail(item)">
+		 		<td>{{item.ProcessFlow_CD}}</td>
+		 		<td>{{item.Fnumber}}</td>
+		 		<td>{{item.FName}}</td>
+		 		<td>{{item.TaskCount}}</td>
+		 		<td>{{item.FinishCount}}</td>
+		 		<td>{{item.ReceiveDttm}}</td>
+		 	</tr>
+		 </table>
+	</div>
+ 
+</div>
+<script src="../js/jquery-2.1.4.min.js"></script> 
+<script src="../js/app.js"></script> 
+<script type="text/javascript" charset="UTF-8">
+  	mui.init();
+//	onResizeWindow();
+//	    window.onresize = onResizeWindow;
+//	    function onResizeWindow(){
+//	        $("#inputContent").css("width",$(window).width()-92);
+//	    }
+  	 
+  	var vm_task_input_list = new Vue({
+		el: '#task_input_list_content',
+		data: {
+			taskSearchInfo:{
+				command:"list",
+				message:"",
+				data:""
+				}
+			,
+			taskList:[//
+//			{
+//				FName:"平衡圈",
+//				FNumber:"2.3220-M510-0400",
+//				FinishCount:1,
+//				ProcessFlow_CD:"FC1705374",
+//				ReceiveDttm:"2017-11-24 19:53:57",
+//				ReceiveNumber:"1554",
+//				ReceiveUser:"user2", 
+//				TaskCount:6
+//			}
+			],
+		},
+		methods:{
+		}
+	});
+ 
+  	   
+	function openTaskInputDetail(item){
+		 
+		app.setPageParam("$selectInputTaskItem",item);
+		window.location.href="tasks_input_detail_page.html";
+	}
+	mui.ready(function(){
+		var userInfo = app.getState();
+		vm_task_input_list.taskSearchInfo.data=""+JSON.stringify(userInfo);
+			app.postTaskList(vm_task_input_list.taskSearchInfo,function(data){
+			if(data.code==1){
+				var dataList = data.data; // 目前没数据先模拟数据。
+				console.info(dataList);
+				vm_task_input_list.taskList=JSON.parse(dataList);
+			 	pageIndex=1;
+			}else{
+				mui.toast(data.msg);
+			} 
+		});
+	});
+	
+	window.onload=function(){
+//		courseId = $.query.get("courseId"); 
+//		classId = $.query.get("classId");
+//		console.info("courseId:  "+courseId);
+//		console.info("classId:  "+classId);
+		
+	}
+	
+</script>
+</body>
+</html>

@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+    <title>菜单</title>
+	<script src="../js/jquery-2.1.4.min.js"></script>
+	<script src="../js/jquery.params.js"></script>
+	<script src="../js/mui.min.js"></script> 
+	<script src="../js/app.js"></script>
+	<script src="../js/vue.min.js"></script>
+    <link href="../css/mui.css" rel="stylesheet"/> 
+	<link href="../css/menu_page.css" rel="stylesheet"/>
+    <link href="../css/app.css" rel="stylesheet"/> 
+    <link href="../css/font-awesome-4.7.0/css/font-awesome.min.css" rel="stylesheet">
+</head>
+<body class="pagebg  bg_gradient"> 
+	<div id="menu_page_content">
+		<header class="mui-bar mui-bar-nav top_title">
+ 		<h1 class="mui-title">{{userInfo.LoginUser}}</h1>
+		</header>
+		<div id="item1" class=" mui-content " style="">
+			 <div class="normal">
+			 	<ul class="ul_list">
+			 		<li v-for="item in menuList" class="li_models" >  
+			 			<a @tap="openPage(item)" class="links" href="#">
+			 				<i :class="item.icon" class="menu_i" style="font-size: 2.0em;" :style="item.showFlag?'':'color:#999999;'"></i>
+			 				<!--<p class="menu_i">{{item.menuCode}}</p>-->
+			 				<p class="menu_name" :style="item.showFlag?'':'color:#999999;'">{{item.menuName}}</p> 
+			 			</a>   
+			 		</li>      
+			 	</ul> 
+			 </div>			 	   
+		</div>  
+	</div>
+	<script type="text/javascript">
+		 
+        mui.init({
+        	
+        });
+        var vm_menu = new Vue({
+			el: '#menu_page_content',
+			data: {
+				userInfo:{
+					LoginUser:"",
+					LoginNumber:"",
+					GroupName:""
+				},
+				 menuList:[ //TODO 全部showflag:false
+				 {menuCode:1,menuName:'检查项目数据维护',menuUrl:'check_project_number.html',showFlag:false,icon:'fa fa-database'},
+				 {menuCode:2,menuName:'测量工具数据维护',menuUrl:'tasks_page.html',showFlag:false,icon:'fa fa-suitcase'},
+				  
+				 {menuCode:3,menuName:'任务接受',menuUrl:'scan',showFlag:true,icon:'fa fa-barcode'},
+				 //{menuCode:3,menuName:'任务接受',menuUrl:'tasks_page.html',showFlag:false,icon:'fa fa-barcode'},
+				 {menuCode:4,menuName:'编号锁定和释放',menuUrl:'tasks_page.html',showFlag:true,icon:'fa fa-unlock-alt'},
+				 {menuCode:5,menuName:'测量数据输入',menuUrl:'tasks_input_list.html',showFlag:true,icon:'fa fa-pencil-square-o'},
+				 {menuCode:6,menuName:'不合格确认',menuUrl:'tasks_page.html',showFlag:false,icon:'fa fa-check-square-o'}
+				 ]
+			}
+		});
+       
+		mui.ready(function(){
+			//LoginNumber={0}&LoginUser={1}&GroupName={2}
+			var LoginNumber = $.query.get("LoginNumber");
+			var LoginUser = $.query.get("LoginUser");
+			var GroupName = $.query.get("GroupName");
+			vm_menu.userInfo.LoginUser=LoginUser;
+			vm_menu.userInfo.LoginNumber=LoginNumber;
+			vm_menu.userInfo.GroupName=GroupName;
+			
+			app.createState(vm_menu.userInfo);
+			console.info("LoginUser>>>>>>>>>>>>>"+vm_menu.userInfo.LoginUser);
+			console.info("LoginNumber>>>>>>>>>>>>>"+vm_menu.userInfo.LoginNumber);
+			console.info("GroupName>>>>>>>>>>>>>"+vm_menu.userInfo.GroupName);
+			
+			//TODO 放开更新权限注释
+		 	//getMenuList();
+		
+		
+		});
+		
+		function getMenuList(){
+			app.getMenuList(vm_menu.userInfo.GroupName,function(data){
+				if(data.code==1){
+					var dataList = data.data; // 目前没数据先模拟数据。
+					console.info(dataList);
+					var menu2 =JSON.parse(dataList);
+					for(var i=0;i<menu2.length;i++){
+						for(var j=0;j<vm_menu.menuList.length;j++){
+							if(vm_menu.menuList[j].menuCode==menu2[i].menuCode){
+								vm_menu.menuList[j].showFlag=menu2[i].showFlag==1? true:false;
+							}
+						}
+					}
+				}else{
+					mui.toast(data.msg);
+				} 
+			});
+		}
+		function openPage(item) {
+			if(item.showFlag){
+				setTimeout(function () {
+				if(item.menuUrl == "scan"){
+					gotoActivity(item.menuUrl);
+				}
+				else{
+					window.location.href=item.menuUrl;
+				}
+			},150);
+			}else{
+				mui.toast('没有权限');
+			}
+		}
+		 
+		function gotoActivity (activity) {
+			nativeMethod.toActivity(activity);
+		}
+		
+		
+		
+		
+	</script>
+</body>
+</html>

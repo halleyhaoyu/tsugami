@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+    <title>任务列表</title>
+    <script src="../js/mui.min.js"></script>
+	<script src="../js/vue.min.js"></script>
+	<script src="../js/jquery-2.1.4.min.js"></script> 
+	<script src="../js/app.js"></script> 
+	<script type="text/javascript" src="../js/mui.picker.js" ></script>
+	<script type="text/javascript" src="../js/mui.poppicker.js" ></script>
+    <link href="../css/mui.css" rel="stylesheet"/> 
+    <link href="../css/app.css" rel="stylesheet"/> 
+    <link href="../css/tasks_page.css" rel="stylesheet"/> 
+    <link href="../css/font-awesome-4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="../css/mui.picker.min.css" />
+    <link rel="stylesheet" href="../css/mui.poppicker.css" />
+    <style>
+    
+	
+    </style>
+</head>
+<body>
+	<div id="task_detail_content">
+		
+	<header class="mui-bar mui-bar-nav top_title" >
+		<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+		<h1 class="mui-title">检查任务清单</h1>
+		<i class="fa fa-hand-o-up" @tap="upProject()" style="font-size: 1.7em; color: #ffffff; margin: 0.2em; float: right;"></i>
+	</header>
+ 
+   
+ 
+	<div id="item1" class=" mui-content "  >
+		 <table >
+		 	<tr class="tr_title">
+		 		<th>工序流转卡号</th>
+		 		<th>图号</th>
+		 		<th>品名</th>
+		 		<th>数量</th>
+		 		<th>检查完成</th>
+		 		<th>接受时间</th>
+		 	</tr>
+		 	<tr class="tr_content" v-for="item in taskList">
+		 		<td>{{item.ProcessFlow_CD}}</td>
+		 		<td>{{item.Fnumber}}</td>
+		 		<td>{{item.FName}}</td>
+		 		<td>{{item.TaskCount}}</td>
+		 		<td>{{item.FinishCount}}</td>
+		 		<td>{{item.ReceiveDttm}}</td>
+		 	</tr>
+		 </table>
+		 
+		 
+		 <table >
+		 	<tr class="tr_title">
+		 		<th width="20%">钢印号 </th>
+		 		<th width="20%">测量者</th>
+		 		<th width="20%">结果</th>
+		 		<th width="20%">完成时间</th>
+		 		<th width="20%"><i v-if="isAdmin" @tap="multChangeLockStatusShow()" class="fa fa-tasks" style="font-size: 1.5em; color: #333333;"></i></th>
+		 	</tr>
+		 	<tr class="tr_content" v-if="multLockFlag">
+		 		<td colspan="2"><input type="text" @tap="op_select_class()" v-model="selectUser.LoginUser"  style="margin: 2px;"  placeholder="测量者" readonly="readonly"></td>
+		 		<td colspan="2"><input type="number" v-model="multSelectQt"  style="margin: 2px;"  placeholder="数量"></td>
+		 		<td colspan="1"><i class="fa fa-check" @tap="changeLockStatus(0)" style=" font-size: 2.5em; color: rgb(0,167,60);"></i></td>
+		 	</tr>
+		 	<tr class="tr_content" v-for="detailItem in taskDetailList">
+		 		<td>{{detailItem.Model}}</td>
+		 		<td>{{detailItem.LockUser}}</td>
+		 		<td>{{detailItem.CheckResult}}</td>
+		 		<td>{{detailItem.FinishDttm}} </td>
+		 		<td>
+		 			<i v-if="detailItem.LockFl==0" @tap="changeLockStatus(1,detailItem,1)" class="fa fa-unlock unlock_font" style="font-size: 2em;"></i>
+		 			<i v-if="detailItem.LockFl==1" @tap="changeLockStatus(1,detailItem,0)" class="fa fa-lock lock_font" style="font-size: 2em;"></i>
+		 		</td> 
+		 	</tr>
+		 </table>
+		 
+	</div>
+	
+ 
+</div>
+<script type="text/javascript" charset="UTF-8">
+  	mui.init();
+//	onResizeWindow();
+//	    window.onresize = onResizeWindow;
+//	    function onResizeWindow(){
+//	        $("#inputContent").css("width",$(window).width()-92);
+//	    }
+  	 
+	var userPicker = new mui.PopPicker();
+	
+  	var vm_task_detail = new Vue({
+		el: '#task_detail_content',
+		data: {
+			multLockFlag:false,
+			multSelectQt:'',
+			taskSearchInfo:{
+				command:"detail",
+				message:"",
+				data:""
+			},
+			userInfo:{
+				LoginUser:"user2",
+				LoginNumber:1554,
+				GroupName:'检查组长'
+			},
+			taskList:[//
+//			{
+//				FName:"平衡圈",
+//				FNumber:"2.3220-M510-0400",
+//				FinishCount:1,
+//				ProcessFlow_CD:"FC1705374",
+//				ReceiveDttm:"2017-11-24 19:53:57",
+//				ReceiveNumber:"1554",
+//				ReceiveUser:"user2", 
+//				TaskCount:6
+//			},
+			],
+			selectUser:{
+				LoginUser:"",
+				LoginNumber:0,
+				GroupName:''
+			},
+			taskDetailList:[],
+			checkUserList:[{value:1555,text:"检查员A"},{value:1556,text:"检查员B"}]
+		},computed: {
+		    isAdmin:function(){
+		    	return this.userInfo.GroupName=='检查组长';
+		    }
+		},
+		methods:{
+		}
+	});
+	
+	
+	mui.ready(function(){
+		vm_task_detail.userInfo = app.getState();
+		ini_op_select_user();
+		getTaskDetail();
+	});
+	
+ 
+ 	function multChangeLockStatusShow(){
+ 		if(!vm_task_detail.multLockFlag){
+ 			vm_task_detail.multLockFlag=true;
+ 		}else{
+ 			vm_task_detail.multLockFlag=false;
+ 		}
+		vm_task_detail.multSelectQt='';
+		vm_task_detail.selectUser={LoginUser:'',LoginNumber:0,};
+ 	}
+   
+	function changeLockStatus(type,item,status){ 
+		//{"command":"lock","message":"","data":"{\"ID\":[102],\"LockFL\":[1],\"LoginUser\":\"user2\",\"LoginNumber\":\"1554\"}"}
+		
+		var ids=[];
+		var LockFL=[];
+		// 如果是组长，根据数量和未锁定的信息进行处理，否则，使用当前用户。
+		if(type==0 && vm_task_detail.isAdmin){
+			var searchData=vm_task_detail.selectUser;
+			console.info(searchData);
+			if(vm_task_detail.multSelectQt){
+				var selectCont=0;
+				
+				for(var i=0;i<vm_task_detail.taskDetailList.length;i++){
+					if(vm_task_detail.taskDetailList[i].LockFl==0){
+						//vm_task_detail.taskDetailList[i].LockFl=1;
+						ids.push(vm_task_detail.taskDetailList[i].ID);
+						LockFL.push(1);						
+						selectCont++;
+						if(selectCont>=vm_task_detail.multSelectQt){
+							break;
+						}
+					}
+				}
+			}else{
+				mui.toast("请输入数量！");
+				return;
+			}
+		}else{
+			if(vm_task_detail.isAdmin){
+				userPicker.show(function(items) {
+					console.info(JSON.stringify(items));
+					if(items[0].value>0){
+						vm_task_detail.selectUser.LoginUser=items[0].text;
+						vm_task_detail.selectUser.LoginNumber=items[0].value;
+						ids=[item.ID];
+						LockFL=[status];
+						item.LockFl=status;
+						var searchData=vm_task_detail.selectUser;
+						postLockChange(searchData,ids,LockFL,item,status);
+					}else{
+						vm_task_detail.selectUser.LoginUser="";
+						vm_task_detail.selectUser.LoginNumber=0;
+					}
+				});
+				return ;
+				
+			}else{
+				var userInfo = app.getState();
+				var searchData=userInfo;
+				ids=[item.ID];
+				LockFL=[status];
+				item.LockFl=status;
+			}
+		}
+		postLockChange(searchData,ids,LockFL,item,status);
+	}
+	
+	function postLockChange(searchData,ids,LockFL,item,status){
+		
+		if(searchData.LoginUser=='' || searchData.LoginNumber==0){
+			mui.toast("请选择测量者！");
+		} else if(ids.length==0){
+			mui.toast("没有可以操作钢印号！");
+		}else{
+			searchData.ID=ids;
+			searchData.LockFL=LockFL;
+			vm_task_detail.taskSearchInfo.command="lock";
+			vm_task_detail.taskSearchInfo.data=""+JSON.stringify(searchData);
+			console.info("vm_task_detail.taskSearchInfo");
+			console.info(vm_task_detail.taskSearchInfo);
+				app.postTaskList(vm_task_detail.taskSearchInfo,function(data){
+				if(data.code==1){
+					mui.toast("操作成功！");
+					getTaskDetail();
+				}else{
+					mui.toast(data.msg);
+				}
+			});
+		}
+	}
+	
+	
+	function  getTaskDetail(){
+		var userInfo = app.getState();
+		var searchData=userInfo;
+		var selectTask=app.getPageParam("$selectTaskItem");
+		vm_task_detail.taskList=[];
+		vm_task_detail.taskList.push(selectTask);
+		searchData.ProcessFlow_CD=selectTask.ProcessFlow_CD;
+		vm_task_detail.taskSearchInfo.command="detail";
+		vm_task_detail.taskSearchInfo.data=""+JSON.stringify(searchData);
+			app.postTaskList(vm_task_detail.taskSearchInfo,function(data){
+			if(data.code==1){
+				var dataList = data.data; // 目前没数据先模拟数据。
+				console.info(dataList);
+				vm_task_detail.taskDetailList=JSON.parse(dataList);
+			 	pageIndex=1;
+			}else{
+				mui.toast(data.msg);
+			}
+		});
+	}
+	window.onload=function(){
+//		courseId = $.query.get("courseId"); 
+//		classId = $.query.get("classId");
+//		console.info("courseId:  "+courseId);
+//		console.info("classId:  "+classId);
+		
+	}
+	
+	function ini_op_select_user(){
+  		var userList=[];
+		var userOption = {value:0,	text:'--选择测量者--'};
+		userList.push(userOption); 
+		//TODO 去除默认项，从服务端获取。
+		userPicker.setData(userList.concat(vm_task_detail.checkUserList));
+		if(vm_task_detail.isAdmin)
+		{
+			app.getUserList(function(data){
+				if(data.code==1){
+					var dataList = JSON.parse(data.data); // 目前没数据先模拟数据。
+					for(var i=0; i<dataList.length;i++){ 
+						userList.push(
+							{value:dataList[i].User_ID,text:dataList[i].User_Name}
+						);
+					}
+					userPicker.setData(dataList);
+				}
+			});
+		}
+  	}
+  	
+  	function op_select_class(){
+		userPicker.show(function(items) {
+			console.info(JSON.stringify(items));
+			if(items[0].value>0){
+				vm_task_detail.selectUser.LoginUser=items[0].text;
+				vm_task_detail.selectUser.LoginNumber=items[0].value;
+			}else{
+				vm_task_detail.selectUser.LoginUser="";
+				vm_task_detail.selectUser.LoginNumber=0;
+			}
+		});
+		
+	}
+  	
+  	function upProject(){
+  		mui.toast("开发中！");
+  	}
+	
+</script>
+</body>
+</html>
