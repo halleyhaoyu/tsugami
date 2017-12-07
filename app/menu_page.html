@@ -47,14 +47,14 @@
 					GroupName:""
 				},
 				 menuList:[ //TODO 全部showflag:false
-				 {menuCode:1,menuName:'检查项目数据维护',menuUrl:'check_project_number.html',showFlag:false,icon:'fa fa-database'},
+				 {menuCode:1,menuName:'检查项目数据维护',menuUrl:'tasks_page.html',showFlag:false,icon:'fa fa-database'},
 				 {menuCode:2,menuName:'测量工具数据维护',menuUrl:'tasks_page.html',showFlag:false,icon:'fa fa-suitcase'},
 				  
 				 {menuCode:3,menuName:'任务接受',menuUrl:'scan',showFlag:true,icon:'fa fa-barcode'},
 				 //{menuCode:3,menuName:'任务接受',menuUrl:'tasks_page.html',showFlag:false,icon:'fa fa-barcode'},
 				 {menuCode:4,menuName:'编号锁定和释放',menuUrl:'tasks_page.html',showFlag:true,icon:'fa fa-unlock-alt'},
 				 {menuCode:5,menuName:'测量数据输入',menuUrl:'tasks_input_list.html',showFlag:true,icon:'fa fa-pencil-square-o'},
-				 {menuCode:6,menuName:'不合格确认',menuUrl:'tasks_page.html',showFlag:false,icon:'fa fa-check-square-o'}
+				 {menuCode:6,menuName:'不合格确认',menuUrl:'below_grade_list.html',showFlag:false,icon:'fa fa-check-square-o'}
 				 ]
 			}
 		});
@@ -74,9 +74,7 @@
 			console.info("GroupName>>>>>>>>>>>>>"+vm_menu.userInfo.GroupName);
 			
 			//TODO 放开更新权限注释
-		 	//getMenuList();
-		
-		
+		 	getMenuList();
 		});
 		
 		function getMenuList(){

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
-    <title>任务列表</title>
+    <title>不合格确认清单</title>
     <script src="../js/mui.min.js"></script>
 	<script src="../js/vue.min.js"></script>
     <link href="../css/mui.css" rel="stylesheet"/> 
@@ -15,11 +15,11 @@
     </style>
 </head>
 <body>
-	<div id="check_project_number_content">
+	<div id="below_grade_list_content">
 		
 	<header class="mui-bar mui-bar-nav top_title" >
 		<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
-		<h1 class="mui-title">检查项目图号清单</h1>
+		<h1 class="mui-title">不合格确认清单</h1>
 	</header>
  
    
@@ -34,7 +34,7 @@
 		 		<th>检查完成</th>
 		 		<th>接受时间</th>
 		 	</tr>
-		 	<tr class="tr_content" v-for="item in taskList">
+		 	<tr class="tr_content" v-for="item in taskList" @tap="openTaskDetail(item)">
 		 		<td>{{item.ProcessFlow_CD}}</td>
 		 		<td>{{item.FNumber}}</td>
 		 		<td>{{item.FName}}</td>
@@ -56,75 +56,44 @@
 //	        $("#inputContent").css("width",$(window).width()-92);
 //	    }
   	 
-  	var vm_task_list = new Vue({
-		el: '#check_project_number_content',
+  	var vm_below_grade_list = new Vue({
+		el: '#below_grade_list_content',
 		data: {
-			userInfo:{
-				LoginUser:"user2",
-				LoginNumber:"1554"
-			},
 			taskSearchInfo:{
 				command:"list",
 				message:"",
 				data:""
 				}
 			,
-			taskList:[//
-//			{
-//				FName:"平衡圈",
-//				FNumber:"2.3220-M510-0400",
-//				FinishCount:1,
-//				ProcessFlow_CD:"FC1705374",
-//				ReceiveDttm:"2017-11-24 19:53:57",
-//				ReceiveNumber:"1554",
-//				ReceiveUser:"user2", 
-//				TaskCount:6
-//			}
-			],
+			taskList:[],
 		},
 		methods:{
 		}
 	});
  
   	   
-	function scShowAllPintPost(item){
-		
-		//console.info("scShowAllPintPost");
-		 		 
-		var userInfo = app.getState();
-		var data={};
-		data=vm_show_all.commentInfo;
-		data.manageId=userInfo.manageId;
-		data.actComActId=item.actId;//  1：学校秀；2：班级秀 3： 普通作品
-		data.actComType=1;//  1：学校秀；2：班级秀 3： 普通作品
-		data.actComIsPoint=1;//  1：点赞；2：评论
-		data.actObject=1;
-		vm_show_all.actComTitle=item.actName;
-		//console.info(item.actName) 
-		app.postComment(data,function(data){
-			if(data.code==0){
-				//mui.back(); 
-				vm_show_all.commentInfo={};  
-				item.actFinePintNum++;
-			}else{
-	    		mui.toast(data.msg);
-	    	}
-		});
+	function openTaskDetail(item){
+		 
+		app.setPageParam("$selectBelowGradeItem",item);
+		window.location.href="below_grade_detail.html";
 	}
 	mui.ready(function(){
 		var userInfo = app.getState();
-		vm_task_list.taskSearchInfo.data=""+JSON.stringify(userInfo);
-			app.postTaskList(vm_task_list.taskSearchInfo,function(data){
+		vm_below_grade_list.taskSearchInfo.data=""+JSON.stringify(userInfo);
+			app.postTaskList(vm_below_grade_list.taskSearchInfo,function(data){
 			if(data.code==1){
 				var dataList = data.data; // 目前没数据先模拟数据。
 				console.info(dataList);
-				vm_task_list.taskList=JSON.parse(dataList);
+				vm_below_grade_list.taskList=JSON.parse(dataList);
 			 	pageIndex=1;
 			}else{
-				mui.toast(data.msg);
+				mui.toast(data.message);
 			} 
 		});
 	});
+	
+	
+	
 	window.onload=function(){
 //		courseId = $.query.get("courseId"); 
 //		classId = $.query.get("classId");
