@@ -36,7 +36,7 @@
 		 	</tr>
 		 	<tr class="tr_content" v-for="item in taskList" @tap="openTaskDetail(item)">
 		 		<td>{{item.ProcessFlow_CD}}</td>
-		 		<td>{{item.Fnumber}}</td>
+		 		<td>{{item.FNumber}}</td>
 		 		<td>{{item.FName}}</td>
 		 		<td>{{item.TaskCount}}</td>
 		 		<td>{{item.FinishCount}}</td>
@@ -98,7 +98,7 @@
 				vm_task_list.taskList=JSON.parse(dataList);
 			 	pageIndex=1;
 			}else{
-				mui.toast(data.msg);
+				mui.toast(data.message);
 			} 
 		});
 	});

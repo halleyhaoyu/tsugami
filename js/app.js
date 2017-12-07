@@ -188,7 +188,7 @@ owner.hostname='http://210.22.188.236:8020/webapi/Service';
 ///// POST 
 /////////////////////////////////////////////////////////////////////////
 	/*
-	  * 课程-选课提交
+	  * 
 	  */
 	owner.postSelectCourse=function(data,callback){
 		var userInfo = app.getState();
@@ -201,11 +201,17 @@ owner.hostname='http://210.22.188.236:8020/webapi/Service';
 	owner.postTaskList=function(data,callback){
 		//var userInfo = app.getState();
 		//view/teachingManage/join.shtml
-		var url=owner.hostname+'/TaskInfo	';  
+		var url=owner.hostname+'/TaskInfo';  
 	 	
 		return owner.postCommon(url,data,callback); 
 	}
-	  
+	owner.postCheckList=function(data,callback){
+		//var userInfo = app.getState();
+		//view/teachingManage/join.shtml
+		var url=owner.hostname+'/CheckItem';  
+	 	
+		return owner.postCommon(url,data,callback); 
+	}
 	 
 	
 
@@ -229,7 +235,7 @@ owner.hostname='http://210.22.188.236:8020/webapi/Service';
 			//headers:{'Content-Type':'application/x-www-form-urlencoded; charset=utf-8'},
 			processData:false,
 			success:function(data){
-				console.info(JSON.stringify(data));
+				//console.info(JSON.stringify(data));
 				return callback(data);
 			},
 			error:function(xhr,type,errorThrown){

@@ -44,7 +44,7 @@
 		 	</tr>
 		 	<tr class="tr_content" v-for="item in taskList">
 		 		<td>{{item.ProcessFlow_CD}}</td>
-		 		<td>{{item.Fnumber}}</td>
+		 		<td>{{item.FNumber}}</td>
 		 		<td>{{item.FName}}</td>
 		 		<td>{{item.TaskCount}}</td>
 		 		<td>{{item.FinishCount}}</td>
@@ -125,7 +125,7 @@
 				GroupName:''
 			},
 			taskDetailList:[],
-			checkUserList:[{value:1555,text:"检查员A"},{value:1556,text:"检查员B"}]
+			checkUserList:[]
 		},computed: {
 		    isAdmin:function(){
 		    	return this.userInfo.GroupName=='检查组长';
@@ -161,7 +161,7 @@
 		// 如果是组长，根据数量和未锁定的信息进行处理，否则，使用当前用户。
 		if(type==0 && vm_task_detail.isAdmin){
 			var searchData=vm_task_detail.selectUser;
-			console.info(searchData);
+			//console.info(searchData);
 			if(vm_task_detail.multSelectQt){
 				var selectCont=0;
 				
@@ -183,7 +183,7 @@
 		}else{
 			if(vm_task_detail.isAdmin){
 				userPicker.show(function(items) {
-					console.info(JSON.stringify(items));
+					//console.info(JSON.stringify(items));
 					if(items[0].value>0){
 						vm_task_detail.selectUser.LoginUser=items[0].text;
 						vm_task_detail.selectUser.LoginNumber=items[0].value;
@@ -221,14 +221,14 @@
 			searchData.LockFL=LockFL;
 			vm_task_detail.taskSearchInfo.command="lock";
 			vm_task_detail.taskSearchInfo.data=""+JSON.stringify(searchData);
-			console.info("vm_task_detail.taskSearchInfo");
-			console.info(vm_task_detail.taskSearchInfo);
+			//console.info("vm_task_detail.taskSearchInfo");
+			//console.info(vm_task_detail.taskSearchInfo);
 				app.postTaskList(vm_task_detail.taskSearchInfo,function(data){
 				if(data.code==1){
 					mui.toast("操作成功！");
 					getTaskDetail();
 				}else{
-					mui.toast(data.msg);
+					mui.toast(data.message);
 				}
 			});
 		}
@@ -247,11 +247,11 @@
 			app.postTaskList(vm_task_detail.taskSearchInfo,function(data){
 			if(data.code==1){
 				var dataList = data.data; // 目前没数据先模拟数据。
-				console.info(dataList);
+				//console.info(dataList);
 				vm_task_detail.taskDetailList=JSON.parse(dataList);
 			 	pageIndex=1;
 			}else{
-				mui.toast(data.msg);
+				mui.toast(data.message);
 			}
 		});
 	}
@@ -268,18 +268,19 @@
 		var userOption = {value:0,	text:'--选择测量者--'};
 		userList.push(userOption); 
 		//TODO 去除默认项，从服务端获取。
-		userPicker.setData(userList.concat(vm_task_detail.checkUserList));
+		userPicker.setData(userList);//.concat(vm_task_detail.checkUserList)
 		if(vm_task_detail.isAdmin)
 		{
 			app.getUserList(function(data){
 				if(data.code==1){
 					var dataList = JSON.parse(data.data); // 目前没数据先模拟数据。
+					console.info(dataList);
 					for(var i=0; i<dataList.length;i++){ 
 						userList.push(
 							{value:dataList[i].User_ID,text:dataList[i].User_Name}
 						);
 					}
-					userPicker.setData(dataList);
+					userPicker.setData(userList);
 				}
 			});
 		}
@@ -287,7 +288,7 @@
   	
   	function op_select_class(){
 		userPicker.show(function(items) {
-			console.info(JSON.stringify(items));
+			//console.info(JSON.stringify(items));
 			if(items[0].value>0){
 				vm_task_detail.selectUser.LoginUser=items[0].text;
 				vm_task_detail.selectUser.LoginNumber=items[0].value;

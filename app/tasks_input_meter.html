@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
-    <title>测量输入项目选择</title>
+    <title>测量数据输入</title>
     <script src="../js/mui.min.js"></script>
 	<script src="../js/vue.min.js"></script>
 	<script src="../js/jquery-2.1.4.min.js"></script> 
@@ -22,11 +22,12 @@
     </style>
 </head>
 <body>
-	<div id="task_input_select_content">
+	<div id="task_input_meter_content">
 		
 	<header class="mui-bar mui-bar-nav top_title" >
 		<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
-		<h1 class="mui-title">测量输入项目选择</h1>
+		<h1 class="mui-title">测量数据输入</h1>
+		<i class="fa fa-save" @tap="saveMeterInput()" style="font-size: 1.7em; color: #ffffff; margin: 0.2em; float: right;"></i>
 	</header>
  
    
@@ -50,8 +51,6 @@
 		 		<td>{{item.ReceiveDttm}}</td>
 		 	</tr>
 		 </table>
-		 
-		 
 		 <table >
 		 	<tr class="tr_title">
 		 		<th width="15%">测量项目</th>
@@ -63,7 +62,7 @@
 		 		<th width="10%">样本数</th>
 		 		<th width="10%">完成数</th>
 		 	</tr>
-		 	<tr class="tr_content" v-for="detailItem in detailItemList" @tap="openCheckInputDetail(detailItem)">
+		 	<tr class="tr_content" v-for="detailItem in detailItemList">
 		 		<td>{{detailItem.ItemID}}</td>
 		 		<td>{{detailItem.Tools}}</td>
 		 		<td>{{detailItem.Unit}}</td>
@@ -75,14 +74,21 @@
 		 	</tr>
 		 </table>
 		 
+		 <table >
+		 	<tr class="tr_content" v-for="meterItem in meterItemList">
+		 		<td width="20%">钢印号：{{meterItem.Model}}</td>
+		 		<td style="padding: 2px 10px;"><input type="number" v-model="meterItem.Result"  style="margin: 2px;"  placeholder="请输入"></td>
+		 	</tr>
+		 </table>
+		 
 	</div>
 	
  
 </div>
 <script type="text/javascript" charset="UTF-8">
   	mui.init(); 
-  	var vm_task_input_select = new Vue({
-		el: '#task_input_select_content',
+  	var vm_task_input_meter = new Vue({
+		el: '#task_input_meter_content',
 		data: {
 			checkAllFlag:false,
 			selectItemIds:[],
@@ -92,23 +98,14 @@
 				data:""
 			},
 			userInfo:{
-				LoginUser:"user2",
-				LoginNumber:1554,
-				GroupName:'检查组长'
+//				LoginUser:"user2",
+//				LoginNumber:1554,
+//				GroupName:'检查组长'
 			},
-			taskList:[//
-//			{
-//				FName:"平衡圈",
-//				FNumber:"2.3220-M510-0400",
-//				FinishCount:1,
-//				ProcessFlow_CD:"FC1705374",
-//				ReceiveDttm:"2017-11-24 19:53:57",
-//				ReceiveNumber:"1554",
-//				ReceiveUser:"user2", 
-//				TaskCount:6
-//			},
+			taskList:[
 			],
-			detailItemList:[]
+			detailItemList:[],
+			meterItemList:[]
 		},computed: {
 		    isAdmin:function(){
 		    	return this.userInfo.GroupName=='检查组长';
@@ -121,7 +118,7 @@
 	
 	
 	mui.ready(function(){
-		vm_task_input_select.userInfo = app.getState();
+		vm_task_input_meter.userInfo = app.getState();
 		getTaskDetail();
 	});
 	
@@ -130,19 +127,35 @@
 		var userInfo = app.getState();
 		var searchData=userInfo;
 		var selectTask=app.getPageParam("$selectInputTaskItem");
-		vm_task_input_select.taskList=[];
-		vm_task_input_select.taskList.push(selectTask);			
+		vm_task_input_meter.taskList=[];
+		vm_task_input_meter.taskList.push(selectTask);
+		
+		
+		var selectProject=app.getPageParam("$selectCheckInputDetailItems");
+		vm_task_input_meter.detailItemList=[];
+		vm_task_input_meter.detailItemList.push(selectProject);	
 		 
 		searchData.ProcessFlow_CD=selectTask.ProcessFlow_CD;
 		searchData.FNumber=selectTask.FNumber;
-		vm_task_input_select.taskSearchInfo.command="list";
-		vm_task_input_select.taskSearchInfo.data=""+JSON.stringify(searchData);
-		app.postCheckList(vm_task_input_select.taskSearchInfo,function(data){
+		searchData.SEQ=selectProject.SEQ;
+		vm_task_input_meter.taskSearchInfo.command="load";
+		vm_task_input_meter.taskSearchInfo.data=""+JSON.stringify(searchData);
+		app.postCheckList(vm_task_input_meter.taskSearchInfo,function(data){
 			if(data.code==1){
-				var dataList = data.data; // 目前没数据先模拟数据。
+				var dataList = data.data; 
 				console.info(dataList);
-				vm_task_input_select.detailItemList=JSON.parse(dataList);
-			 	pageIndex=1;
+				var AllList=JSON.parse(dataList);
+				
+				var selectTaskInputDetailItems=app.getPageParam("$selectTaskInputDetailItems");
+				
+				for(var i=0;i<AllList.length;i++){
+					for(var j=0;j<selectTaskInputDetailItems.length;j++){
+						if(AllList[i].Model==selectTaskInputDetailItems[j].Model){
+							vm_task_input_meter.meterItemList.push(AllList[i]);
+						}
+					}
+				}
+				
 			}else{
 				mui.toast(data.message);
 			}
@@ -156,9 +169,27 @@
 		
 	}
 	 
-	function openCheckInputDetail(detailItem){		
-		app.setPageParam("$selectCheckInputDetailItems",detailItem);
-		window.location.href="tasks_input_meter.html";
+	function saveMeterInput(){		
+		var userInfo = app.getState();
+		var searchData=userInfo;
+		var ID=[];
+		var Result=[];
+		for(var i=0;i<vm_task_input_meter.meterItemList.length;i++){
+			ID.push(vm_task_input_meter.meterItemList[i].ID);
+			Result.push(vm_task_input_meter.meterItemList[i].Result);
+		}
+		searchData.ID=ID;
+		searchData.Result=Result;
+		vm_task_input_meter.taskSearchInfo.command="save";
+		vm_task_input_meter.taskSearchInfo.data=""+JSON.stringify(searchData);
+		app.postCheckList(vm_task_input_meter.taskSearchInfo,function(data){
+			if(data.code==1){
+				var dataList = data.data; 
+				console.info(dataList); 
+			}else{
+				mui.toast(data.message);
+			}
+		});
 	}
 	
 </script>
