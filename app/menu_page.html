@@ -54,7 +54,8 @@
 				 //{menuCode:3,menuName:'任务接受',menuUrl:'tasks_page.html',showFlag:false,icon:'fa fa-barcode'},
 				 {menuCode:4,menuName:'编号锁定和释放',menuUrl:'tasks_page.html',showFlag:true,icon:'fa fa-unlock-alt'},
 				 {menuCode:5,menuName:'测量数据输入',menuUrl:'tasks_input_list.html',showFlag:true,icon:'fa fa-pencil-square-o'},
-				 {menuCode:6,menuName:'不合格确认',menuUrl:'below_grade_list.html',showFlag:false,icon:'fa fa-check-square-o'}
+				 {menuCode:6,menuName:'不合格确认',menuUrl:'below_grade_list.html',showFlag:false,icon:'fa fa-check-square-o'},
+				 {menuCode:7,menuName:'组装数据录入',menuUrl:'check',showFlag:false,icon:'fa fa-gears'}
 				 ]
 			}
 		});
@@ -98,7 +99,7 @@
 		function openPage(item) {
 			if(item.showFlag){
 				setTimeout(function () {
-				if(item.menuUrl == "scan"){
+				if(item.menuUrl == "scan" || item.menuUrl == "check"){
 					gotoActivity(item.menuUrl);
 				}
 				else{

@@ -55,21 +55,21 @@
 		 <table >
 		 	<tr class="tr_title">
 		 		<th width="15%">测量项目</th>
-		 		<th width="20%">工具</th>
+		 		<th width="20%">检查项目</th>
 		 		<th width="10%">单位</th>
-		 		<!--<th width="10%">测定<br>尺寸</th>-->
+		 		<th width="10%">测定<br>尺寸</th>
 		 		<th width="15%">公差正<br>公差负</th>
 		 		
-		 		<th width="10%">钢印号</th>
+		 		<th width="10%">钢印号<br>{{vm_below_grade_detail.taskList[0].Model}}</th>
 		 	</tr>
 		 	<tr class="tr_content" v-for="detailItem in detailItemList" > <!--@tap="openCheckInputDetail(detailItem)"-->
-		 		<td>{{detailItem.ItemID}}</td>
-		 		<td>{{detailItem.Tools}}</td>
+		 		<td>{{detailItem.TypeName}}</td>
+		 		<td>{{detailItem.ItemName}}</td>
 		 		<td>{{detailItem.Unit}}</td>
-		 		<!---->
-		 		<td>{{detailItem.BaseTolerance}}</td> 
-		 		
-		 		<td>&nbsp;</td>  
+		 		<td>{{detailItem.Size}}</td>
+		 		<td>{{detailItem.ToleranceMinus}}<br>{{detailItem.TolerancePlus}}</td> 
+		 		 
+		 		<td>{{detailItem.Base}}</td>
 		 	</tr>
 		 </table>
 		 
@@ -133,13 +133,17 @@
 		 
 		searchData.ProcessFlow_CD=selectTask.ProcessFlow_CD;
 		searchData.FNumber=selectTask.FNumber;
-		vm_below_grade_detail.taskSearchInfo.command="list";
+		searchData.Process_CD=selectTask.Process_CD;
+		searchData.Model=selectTask.Model;
+		
+		
+		vm_below_grade_detail.taskSearchInfo.command="result";
 		vm_below_grade_detail.taskSearchInfo.data=""+JSON.stringify(searchData);
-		app.postCheckList(vm_below_grade_detail.taskSearchInfo,function(data){
+		app.postTaskList(vm_below_grade_detail.taskSearchInfo,function(data){
 			if(data.code==1){
 				var dataList = data.data; // 目前没数据先模拟数据。
 				console.info(dataList);
-				vm_below_grade_detail.detailItemList=JSON.parse(dataList);
+				vm_below_grade_detail.detailItemList=JSON.parse(dataList).detail;
 			 	pageIndex=1;
 			}else{
 				mui.toast(data.message);

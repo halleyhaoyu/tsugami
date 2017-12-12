@@ -135,6 +135,8 @@
 		 
 		searchData.ProcessFlow_CD=selectTask.ProcessFlow_CD;
 		searchData.FNumber=selectTask.FNumber;
+		searchData.Process_CD=selectTask.Process_CD;
+		
 		vm_task_input_select.taskSearchInfo.command="list";
 		vm_task_input_select.taskSearchInfo.data=""+JSON.stringify(searchData);
 		app.postCheckList(vm_task_input_select.taskSearchInfo,function(data){
