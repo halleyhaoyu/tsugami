@@ -36,7 +36,8 @@
 	<div id="item1" class=" mui-content "  >
 		 <table >
 		 	<tr class="tr_title">
-		 		<th>工序流转卡号</th>
+				<th>工序流转卡号</th>
+				<th>工序号</th> 
 		 		<th>图号</th>
 		 		<th>品名</th>
 		 		<th>数量</th>
@@ -44,7 +45,8 @@
 		 		<th>接受时间</th>
 		 	</tr>
 		 	<tr class="tr_content" v-for="item in taskList">
-		 		<td>{{item.ProcessFlow_CD}}</td>
+				<td>{{item.ProcessFlow_CD}}</td>
+				<td>{{item.Process_CD}}</td>
 		 		<td>{{item.FNumber}}</td>
 		 		<td>{{item.FName}}</td>
 		 		<td>{{item.TaskCount}}</td>
