@@ -142,6 +142,11 @@
 		vm_task_detail.userInfo = app.getState();
 		ini_op_select_user();
 		getTaskDetail();
+		//init login user
+		var login_id = vm_task_detail.userInfo.LoginNumber;
+		var login_name = vm_task_detail.userInfo.LoginUser;
+		vm_task_detail.selectUser={LoginUser:login_name,LoginNumber:login_id,LockUser:'',LockNumber:0,};
+		console.info("vm_task_detail info >>>>>>>>>>>>> " + login_id + login_name);
 	});
 	
  
@@ -152,7 +157,7 @@
  			vm_task_detail.multLockFlag=false;
  		}
 		vm_task_detail.multSelectQt='';
-		vm_task_detail.selectUser={LoginUser:'',LoginNumber:0,};
+		vm_task_detail.selectUser={LoginUser:'',LoginNumber:0,LockUser:'',LockNumber:0,};
  	}
    
 	function changeLockStatus(type,item,status){ 
@@ -187,23 +192,25 @@
 				userPicker.show(function(items) {
 					//console.info(JSON.stringify(items));
 					if(items[0].value>0){
-						vm_task_detail.selectUser.LoginUser=items[0].text;
-						vm_task_detail.selectUser.LoginNumber=items[0].value;
+						vm_task_detail.selectUser.LockUser=items[0].text;
+						vm_task_detail.selectUser.LockNumber=items[0].value;
 						ids=[item.ID];
 						LockFL=[status];
 						item.LockFl=status;
 						var searchData=vm_task_detail.selectUser;
 						postLockChange(searchData,ids,LockFL,item,status);
 					}else{
-						vm_task_detail.selectUser.LoginUser="";
-						vm_task_detail.selectUser.LoginNumber=0;
+						vm_task_detail.selectUser.LockUser="";
+						vm_task_detail.selectUser.LockNumber=0;
 					}
 				});
 				return ;
 				
 			}else{
-				var userInfo = app.getState();
-				var searchData=userInfo;
+				//var userInfo = app.getState();
+				vm_task_detail.selectUser.LockUser=vm_task_detail.selectUser.LoginUser;
+				vm_task_detail.selectUser.LockNumber=vm_task_detail.selectUser.LoginNumber;
+				var searchData=vm_task_detail.selectUser;
 				ids=[item.ID];
 				LockFL=[status];
 				item.LockFl=status;
