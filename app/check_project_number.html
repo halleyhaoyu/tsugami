@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+    <title>任务列表</title>
+    <script src="../js/mui.min.js"></script>
+	<script src="../js/vue.min.js"></script>
+    <link href="../css/mui.css" rel="stylesheet"/> 
+    <link href="../css/app.css" rel="stylesheet"/> 
+    <link href="../css/tasks_page.css" rel="stylesheet"/> 
+    <style>
+    
+	
+    </style>
+</head>
+<body>
+	<div id="check_project_number_content">
+		
+	<header class="mui-bar mui-bar-nav top_title" >
+		<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+		<h1 class="mui-title">检查项目图号清单</h1>
+	</header>
+ 
+   
+ 
+	<div id="item1" class=" mui-content "  >
+		 <table >
+		 	<tr class="tr_title">
+		 		<th>工序流转卡号</th>
+		 		<th>图号</th>
+		 		<th>品名</th>
+		 		<th>数量</th>
+		 		<th>检查完成</th>
+		 		<th>接受时间</th>
+		 	</tr>
+		 	<tr class="tr_content" v-for="item in taskList">
+		 		<td>{{item.ProcessFlow_CD}}</td>
+		 		<td>{{item.Fnumber}}</td>
+		 		<td>{{item.FName}}</td>
+		 		<td>{{item.TaskCount}}</td>
+		 		<td>{{item.FinishCount}}</td>
+		 		<td>{{item.ReceiveDttm}}</td>
+		 	</tr>
+		 </table>
+	</div>
+ 
+</div>
+<script src="../js/jquery-2.1.4.min.js"></script> 
+<script src="../js/app.js"></script> 
+<script type="text/javascript" charset="UTF-8">
+  	mui.init();
+//	onResizeWindow();
+//	    window.onresize = onResizeWindow;
+//	    function onResizeWindow(){
+//	        $("#inputContent").css("width",$(window).width()-92);
+//	    }
+  	 
+  	var vm_task_list = new Vue({
+		el: '#check_project_number_content',
+		data: {
+			userInfo:{
+				LoginUser:"user2",
+				LoginNumber:"1554"
+			},
+			taskSearchInfo:{
+				command:"list",
+				message:"",
+				data:""
+				}
+			,
+			taskList:[//
+			{
+				FName:"平衡圈",
+				FNumber:"2.3220-M510-0400",
+				FinishCount:1,
+				ProcessFlow_CD:"FC1705374",
+				ReceiveDttm:"2017-11-24 19:53:57",
+				ReceiveNumber:"1554",
+				ReceiveUser:"user2", 
+				TaskCount:6
+			}
+			],
+		},
+		methods:{
+		}
+	});
+ 
+  	   
+	function scShowAllPintPost(item){
+		
+		//console.info("scShowAllPintPost");
+		 		 
+		var userInfo = app.getState();
+		var data={};
+		data=vm_show_all.commentInfo;
+		data.manageId=userInfo.manageId;
+		data.actComActId=item.actId;//  1：学校秀；2：班级秀 3： 普通作品
+		data.actComType=1;//  1：学校秀；2：班级秀 3： 普通作品
+		data.actComIsPoint=1;//  1：点赞；2：评论
+		data.actObject=1;
+		vm_show_all.actComTitle=item.actName;
+		//console.info(item.actName) 
+		app.postComment(data,function(data){
+			if(data.code==0){
+				//mui.back(); 
+				vm_show_all.commentInfo={};  
+				item.actFinePintNum++;
+			}else{
+	    		mui.toast(data.msg);
+	    	}
+		});
+	}
+	mui.ready(function(){
+		var userInfo = app.getState();
+		vm_task_list.taskSearchInfo.data=""+JSON.stringify(userInfo);
+			app.postTaskList(vm_task_list.taskSearchInfo,function(data){
+			if(data.code==1){
+				var dataList = data.data; // 目前没数据先模拟数据。
+				console.info(dataList);
+				vm_task_list.taskList=JSON.parse(dataList);
+			 	pageIndex=1;
+			}else{
+				mui.toast(data.msg);
+			} 
+		});
+	});
+	window.onload=function(){
+//		courseId = $.query.get("courseId"); 
+//		classId = $.query.get("classId");
+//		console.info("courseId:  "+courseId);
+//		console.info("classId:  "+classId);
+		
+	}
+	
+</script>
+</body>
+</html>

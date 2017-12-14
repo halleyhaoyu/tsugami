@@ -64,13 +64,13 @@
 		 		<th width="10%">完成数</th>
 		 	</tr>
 		 	<tr class="tr_content" v-for="detailItem in detailItemList" @tap="openCheckInputDetail(detailItem)">
-		 		<td>{{detailItem.ItemID}}</td>
-		 		<td>{{detailItem.Tools}}</td>
+		 		<td><input type="hidden" value='{{detailItem.SEQ}}'/>{{detailItem.TypeName}}</td>
+		 		<td>{{detailItem.DeviceName1}}{{detailItem.DeviceName2}}</td>
 		 		<td>{{detailItem.Unit}}</td>
 		 		<!---->
-		 		<td>{{detailItem.BaseTolerance}}</td> 
+		 		<td>{{detailItem.ToleranceMinus}}<br/>{{detailItem.TolerancePlus}}</td> 
 		 		
-		 		<td>{{detailItem.Qty}}</td> 
+		 		<td>{{detailItem.TotalQty}}</td> 
 		 		<td>{{detailItem.FinishQty}}</td> 
 		 	</tr>
 		 </table>
