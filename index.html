@@ -6,13 +6,19 @@
 	</head>
 	<body>
 		<p>
-		<a href="./app/menu_page.html?LoginNumber=1554&LoginUser=组长A&GroupName=检查组长">组长A</a>
+		<a href="javascript:gotourl('./app/menu_page.html?LoginNumber=1554&LoginUser=组长A&GroupName=检查组长');">组长A</a>
 		</p>
 		<p>
-		<a href="./app/menu_page.html?LoginNumber=1555&LoginUser=检查A&GroupName=检查人员">检查A</a>
+		<a href="javascript:gotourl('./app/menu_page.html?LoginNumber=1555&LoginUser=检查A&GroupName=检查人员');">检查A</a>
 		</p>
 		<p>
-		<a href="./app/menu_page.html?LoginNumber=1556&LoginUser=检查B&GroupName=检查人员">检查B</a>
+		<a href="javascript:gotourl('./app/menu_page.html?LoginNumber=1556&LoginUser=检查B&GroupName=检查人员');">检查B</a>
 		</p>
 	</body>
+	<script language="javascript">
+	function gotourl(url)
+	{
+		document.location = encodeURI(url);
+	}
+	</script>
 </html>
