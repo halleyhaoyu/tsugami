@@ -4,20 +4,40 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
     <title>测量数据输入</title>
+	<script src="../js/jquery-2.1.4.min.js"></script> 
     <script src="../js/mui.min.js"></script>
 	<script src="../js/vue.min.js"></script>
-	<script src="../js/jquery-2.1.4.min.js"></script> 
-	<script src="../js/app.js"></script> 
-	<script type="text/javascript" src="../js/mui.picker.js" ></script>
-	<script type="text/javascript" src="../js/mui.poppicker.js" ></script>
+	<script src="../js/app.js"></script>
     <link href="../css/mui.css" rel="stylesheet"/> 
     <link href="../css/app.css" rel="stylesheet"/> 
     <link href="../css/tasks_page.css" rel="stylesheet"/> 
-    <link href="../css/font-awesome-4.7.0/css/font-awesome.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="../css/mui.picker.min.css" />
-    <link rel="stylesheet" href="../css/mui.poppicker.css" />
+    <link href="../css/font-awesome-4.7.0/css/font-awesome.min.css" rel="stylesheet"> 
     <style>
-    
+    .mui-switch-ok {
+		background: purple;
+		border: 2px solid purple;
+		background-color: purple;
+		
+	}
+    .mui-switch-ok.mui-active:before
+	{
+	    right: auto;
+	    left: 10px;		
+	    font-size: 14px;	
+	    content: 'OK';		
+	    color: #fff;
+	}
+	
+	.mui-switch-ok:before
+	{
+	    font-size: 14px;		
+	    position: absolute;
+	    top: 3px;
+	    right: 11px;		
+	    content: 'NG';
+	    text-transform: uppercase;		
+	    color: #fff;
+	}
 	
     </style>
 </head>
@@ -77,7 +97,17 @@
 		 <table >
 		 	<tr class="tr_content" v-for="meterItem in meterItemList">
 		 		<td width="20%">钢印号：{{meterItem.Model}}</td>
-		 		<td style="padding: 2px 10px;"><input type="number" v-model="meterItem.Result"  style="margin: 2px;"  placeholder="请输入"></td>
+		 		<td style="padding: 2px 10px;">
+		 			<input type="number" v-if="meterItem.MeasureCL==1 || meterItem.MeasureCL==3" v-model="meterItem.Result"  style="margin: 2px;"  placeholder="请输入">
+		 			 
+					<div :id="'meterItem_'+meterItem.ID" v-if="meterItem.MeasureCL==2"  
+						:class="getMeasureCL(meterItem.Result)"
+						style="float: left;"
+						@toggle="changeMeterMeasure(meterItem)"
+						>
+					  <div class="mui-switch-handle"></div>
+					</div>
+		 		</td>
 		 	</tr>
 		 </table>
 		 
@@ -105,14 +135,37 @@
 			taskList:[
 			],
 			detailItemList:[],
-			meterItemList:[]
+			meterItemList:[
+//			{MeasureCL:1,Result:'123',Model:'A'},
+//			{MeasureCL:2,Result:'0',Model:'B'},
+//			{MeasureCL:3,Result:'456',Model:'C'},
+//			{MeasureCL:2,Result:'1',Model:'E'}
+			]
 		},computed: {
 		    isAdmin:function(){
 		    	return this.userInfo.GroupName=='检查组长';
-		    } 
-		    
+		    },		    
 		},
 		methods:{
+			getMeasureCL:function(Result){
+		    	var cl = 'mui-switch mui-switch-blue mui-switch-ok mui-active';
+		    	if(Result=='0'){
+		    		cl = 'mui-switch mui-switch-blue mui-switch-ok mui-active';
+		    	}else{
+		    		cl = 'mui-switch mui-switch-blue mui-switch-ok';
+		    	}
+		    	return cl;
+		    },
+		    changeMeterMeasure:function(item){
+				//console.info(event.detail)
+				//console.info(item);
+				if(event.detail.isActive){
+					item.Result=0;
+				}else{
+					item.Result=1;
+				}
+				//console.info(JSON.stringify(vm_task_input_meter.meterItemList));
+			}
 		}
 	});
 	
@@ -120,6 +173,11 @@
 	mui.ready(function(){
 		vm_task_input_meter.userInfo = app.getState();
 		getTaskDetail();
+		
+		
+		
+			
+			
 	});
 	
    
@@ -143,7 +201,7 @@
 		app.postCheckList(vm_task_input_meter.taskSearchInfo,function(data){
 			if(data.code==1){
 				var dataList = data.data; 
-				console.info(dataList);
+				//console.info(dataList);
 				var AllList=JSON.parse(dataList);
 				
 				var selectTaskInputDetailItems=app.getPageParam("$selectTaskInputDetailItems");
@@ -155,11 +213,13 @@
 						}
 					}
 				}
-				
+				setTimeout(function () {
+					mui('.mui-switch')['switch']();
+				},300);
 			}else{
 				mui.toast(data.message);
 			}
-		});
+		});		 
 	}
 	window.onload=function(){
 //		courseId = $.query.get("courseId"); 
@@ -191,6 +251,16 @@
 			}
 		});
 	}
+	
+	
+//	mui('#task_input_meter_content').on('toggle', '#thGenderName', function(e) {
+////	document.getElementById("thGenderName").addEventListener("toggle",function(event){
+//	  if(event.detail.isActive){
+//	    vm_set_teacher.teacherInfo.thGender='M';
+//	  }else{
+//	    vm_set_teacher.teacherInfo.thGender='F';
+//	  }
+//	})
 	
 </script>
 </body>
