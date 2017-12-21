@@ -28,7 +28,10 @@
 		<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
 		<h1 class="mui-title">不合格样本选择</h1>
 	</header>
- 
+	<nav id="main_bar" class="mui-bar mui-bar-tab top_title">
+		<a id="defaultTab" class="mui-tab-item mui-active " style="color: #FFFFFF; font-size: 1em;" href="#" @tap="showCheckResult()">不合格确认
+		</a> 
+	</nav>
    
  
 	<div id="item1" class=" mui-content "  >
@@ -60,7 +63,7 @@
 		 		<th width="10%">测定<br>尺寸</th>
 		 		<th width="15%">公差正<br>公差负</th>
 		 		
-		 		<th width="10%">钢印号<br>{{vm_below_grade_detail.taskList[0].Model}}</th>
+		 		<th width="10%">钢印号<br>{{taskList[0].Model}}</th>
 		 	</tr>
 		 	<tr class="tr_content" v-for="detailItem in detailItemList" > <!--@tap="openCheckInputDetail(detailItem)"-->
 		 		<td>{{detailItem.TypeName}}</td>
@@ -95,18 +98,22 @@
 //				GroupName:'检查组长'
 			},
 			taskList:[//
-//			{
-//				FName:"平衡圈",
-//				FNumber:"2.3220-M510-0400",
-//				FinishCount:1,
-//				ProcessFlow_CD:"FC1705374",
-//				ReceiveDttm:"2017-11-24 19:53:57",
-//				ReceiveNumber:"1554",
-//				ReceiveUser:"user2", 
-//				TaskCount:6
-//			},
+			{
+				Model:""
+			}
 			],
-			detailItemList:[]
+			detailItemList:[
+//			{TypeName:'1'}
+//			,{TypeName:'2'}
+//			,{TypeName:'3'}
+//			,{TypeName:'4'}
+//			,{TypeName:'5'}
+//			,{TypeName:'6'}
+//			,{TypeName:'7'}
+//			,{TypeName:'8'}
+//			,{TypeName:'9'}
+//			,{TypeName:'0'}
+			]
 		},computed: {
 		    isAdmin:function(){
 		    	return this.userInfo.GroupName=='检查组长';
@@ -142,8 +149,8 @@
 		app.postTaskList(vm_below_grade_detail.taskSearchInfo,function(data){
 			if(data.code==1){
 				var dataList = data.data; // 目前没数据先模拟数据。
-				console.info(dataList);
 				vm_below_grade_detail.detailItemList=JSON.parse(dataList).detail;
+				console.info(vm_below_grade_detail.detailItemList);
 			 	pageIndex=1;
 			}else{
 				mui.toast(data.message);
@@ -163,6 +170,51 @@
 		window.location.href="tasks_input_meter.html";
 	}
 	
+	function showCheckResult(){
+		var selectTask=app.getPageParam("$selectBelowGradeItem");
+		var showInfo='\n'
+		showInfo+='钢印号：'+selectTask.Model+'\n';
+		showInfo+='测量者：'+selectTask.ReceiveUser+'\n';
+		showInfo+='时间：'+selectTask.ReceiveDttm+'\n';
+		mui.confirm(showInfo, '不合格确认', ['合格','不合格','取消'], function(e) {
+			switch(e.index){
+				case 0:
+					mui.toast('合格') ;
+					submitGradeDetail(1);
+				break;
+				case 1:
+					mui.toast('不合格') ;
+					submitGradeDetail(2);
+				break;
+				case 2:
+					mui.toast('取消') ;break;
+				default: break;
+			}
+		})
+	}
+	function submitGradeDetail(result){
+		var selectTask=app.getPageParam("$selectBelowGradeItem");
+  		
+  		var searchData = {};
+  		searchData.ProcessFlow_CD=selectTask.ProcessFlow_CD;
+  		searchData.Process_CD=selectTask.Process_CD;
+  		searchData.LoginUser=vm_below_grade_detail.userInfo.LoginUser;
+		searchData.LoginNumber=vm_below_grade_detail.userInfo.LoginNumber;
+		searchData.FNumber=selectTask.FNumber;
+		searchData.Model=selectTask.Model;
+		searchData.Result=result;
+  		
+		vm_below_grade_detail.taskSearchInfo.command="submit";
+		vm_below_grade_detail.taskSearchInfo.data=""+JSON.stringify(searchData); 
+			app.postTaskList(vm_below_grade_detail.taskSearchInfo,function(data){
+			if(data.code==1){
+				mui.toast("操作成功！"); 
+				mui.back();
+			}else{
+				mui.toast(data.message);
+			}
+		});
+	}
 </script>
 </body>
 </html>

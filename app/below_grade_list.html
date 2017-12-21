@@ -83,7 +83,7 @@
 			app.postTaskList(vm_below_grade_list.taskSearchInfo,function(data){
 			if(data.code==1){
 				var dataList = data.data; // 目前没数据先模拟数据。
-				console.info(dataList);
+				//console.info(dataList);
 				vm_below_grade_list.taskList=JSON.parse(dataList);
 			 	pageIndex=1;
 			}else{
