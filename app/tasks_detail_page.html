@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
-    <title>任务列表</title>
+    <title>检查任务明细</title>
     <script src="../js/mui.min.js"></script>
 	<script src="../js/vue.min.js"></script>
 	<script src="../js/jquery-2.1.4.min.js"></script> 
@@ -26,7 +26,7 @@
 		
 	<header class="mui-bar mui-bar-nav top_title" >
 		<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
-		<h1 class="mui-title">检查任务清单</h1>
+		<h1 class="mui-title">检查任务明细</h1>
 		<i class="fa fa-cloud-upload" @tap="upProject()" style="font-size: 1.7em; color: #ffffff; margin: 0.2em; float: right;"></i>
 	</header>
  
@@ -64,7 +64,7 @@
 		 		<th width="20%"><i v-if="isAdmin" @tap="multChangeLockStatusShow()" class="fa fa-tasks" style="font-size: 1.5em; color: #333333;"></i></th>
 		 	</tr>
 		 	<tr class="tr_content" v-if="multLockFlag">
-		 		<td colspan="2"><input type="text" @tap="op_select_class()" v-model="selectUser.LoginUser"  style="margin: 2px;"  placeholder="测量者" readonly="readonly"></td>
+		 		<td colspan="2"><input type="text" @tap="op_select_class()" v-model="selectUser.LockUser"  style="margin: 2px;"  placeholder="测量者" readonly="readonly"></td>
 		 		<td colspan="2"><input type="number" v-model="multSelectQt"  style="margin: 2px;"  placeholder="数量"></td>
 		 		<td colspan="1"><i class="fa fa-check" @tap="changeLockStatus(0)" style=" font-size: 2.5em; color: rgb(0,167,60);"></i></td>
 		 	</tr>
@@ -122,9 +122,8 @@
 //			},
 			],
 			selectUser:{
-				LoginUser:"",
-				LoginNumber:0,
-				GroupName:''
+				LockUser:"",
+				LockNumber:0,
 			},
 			taskDetailList:[],
 			checkUserList:[]
@@ -166,7 +165,7 @@
 		var ids=[];
 		var LockFL=[];
 		// 如果是组长，根据数量和未锁定的信息进行处理，否则，使用当前用户。
-		if(type==0 && vm_task_detail.isAdmin){
+		if(type==0 && vm_task_detail.isAdmin){ //批量操作情况
 			var searchData=vm_task_detail.selectUser;
 			//console.info(searchData);
 			if(vm_task_detail.multSelectQt){
@@ -187,33 +186,42 @@
 				mui.toast("请输入数量！");
 				return;
 			}
-		}else{
-			if(vm_task_detail.isAdmin){
-				userPicker.show(function(items) {
-					//console.info(JSON.stringify(items));
-					if(items[0].value>0){
-						vm_task_detail.selectUser.LockUser=items[0].text;
-						vm_task_detail.selectUser.LockNumber=items[0].value;
-						ids=[item.ID];
-						LockFL=[status];
-						item.LockFl=status;
-						var searchData=vm_task_detail.selectUser;
-						postLockChange(searchData,ids,LockFL,item,status);
-					}else{
-						vm_task_detail.selectUser.LockUser="";
-						vm_task_detail.selectUser.LockNumber=0;
-					}
-				});
+		}else{//单点操作
+			if(vm_task_detail.isAdmin){//组长操作
+				if(status==1){//锁定
+					userPicker.show(function(items) {
+						//console.info(JSON.stringify(items));
+						if(items[0].value>0){
+							vm_task_detail.selectUser.LockUser=items[0].text;
+							vm_task_detail.selectUser.LockNumber=items[0].value;
+							ids=[item.ID];
+							LockFL=[status];
+							//item.LockFl=status;
+							var searchData=vm_task_detail.selectUser;
+							postLockChange(searchData,ids,LockFL,item,status);
+						}else{
+							vm_task_detail.selectUser.LockUser="";
+							vm_task_detail.selectUser.LockNumber=0;
+						}
+					});
+				}else{//解锁
+					vm_task_detail.selectUser.LockUser="";
+					vm_task_detail.selectUser.LockNumber=0;
+					ids=[item.ID];
+					LockFL=[status];
+					//item.LockFl=status;
+					var searchData=vm_task_detail.selectUser;
+					postLockChange(searchData,ids,LockFL,item,status);
+				}
 				return ;
-				
-			}else{
+			}else{//组员自己操作
 				//var userInfo = app.getState();
 				vm_task_detail.selectUser.LockUser=vm_task_detail.selectUser.LoginUser;
 				vm_task_detail.selectUser.LockNumber=vm_task_detail.selectUser.LoginNumber;
 				var searchData=vm_task_detail.selectUser;
 				ids=[item.ID];
 				LockFL=[status];
-				item.LockFl=status;
+				//item.LockFl=status;
 			}
 		}
 		postLockChange(searchData,ids,LockFL,item,status);
@@ -221,7 +229,8 @@
 	
 	function postLockChange(searchData,ids,LockFL,item,status){
 		
-		if(searchData.LoginUser=='' || searchData.LoginNumber==0){
+		console.info(searchData);
+		if(status==1 && (searchData.LockUser=='' || searchData.LockNumber==0)){
 			mui.toast("请选择测量者！");
 		} else if(ids.length==0){
 			mui.toast("没有可以操作钢印号！");
@@ -231,10 +240,13 @@
 			vm_task_detail.taskSearchInfo.command="lock";
 			vm_task_detail.taskSearchInfo.data=""+JSON.stringify(searchData);
 			//console.info("vm_task_detail.taskSearchInfo");
-			//console.info(vm_task_detail.taskSearchInfo);
+			console.info(vm_task_detail.taskSearchInfo);
 				app.postTaskList(vm_task_detail.taskSearchInfo,function(data){
 				if(data.code==1){
 					mui.toast("操作成功！");
+					if(item){
+						item.LockFl=status;
+					}
 					getTaskDetail();
 				}else{
 					mui.toast(data.message);
@@ -258,7 +270,7 @@
 				var dataList = data.data; // 目前没数据先模拟数据。
 				//console.info(dataList);
 				vm_task_detail.taskDetailList=JSON.parse(dataList);
-			 	pageIndex=1;
+			 	console.info(vm_task_detail.taskDetailList);
 			}else{
 				mui.toast(data.message);
 			}
@@ -299,18 +311,38 @@
 		userPicker.show(function(items) {
 			//console.info(JSON.stringify(items));
 			if(items[0].value>0){
-				vm_task_detail.selectUser.LoginUser=items[0].text;
-				vm_task_detail.selectUser.LoginNumber=items[0].value;
+				vm_task_detail.selectUser.LockUser=items[0].text;
+				vm_task_detail.selectUser.LockNumber=items[0].value;
 			}else{
-				vm_task_detail.selectUser.LoginUser="";
-				vm_task_detail.selectUser.LoginNumber=0;
+				vm_task_detail.selectUser.LockUser="";
+				vm_task_detail.selectUser.LockNumber=0;
 			}
 		});
 		
 	}
   	
   	function upProject(){
-  		mui.toast("开发中！");
+  		var selectTask=app.getPageParam("$selectTaskItem");
+  		
+  		var searchData = {};
+  		searchData.ProcessFlow_CD=selectTask.ProcessFlow_CD;
+  		searchData.Process_CD=selectTask.Process_CD;
+  		searchData.LoginUser=vm_task_detail.userInfo.LoginUser;
+		searchData.LoginNumber=vm_task_detail.userInfo.LoginNumber;
+  		
+		vm_task_detail.taskSearchInfo.command="audit";
+		vm_task_detail.taskSearchInfo.data=""+JSON.stringify(searchData);
+		//console.info("vm_task_detail.taskSearchInfo"); 
+			app.postTaskList(vm_task_detail.taskSearchInfo,function(data){
+			if(data.code==1){
+				mui.toast("操作成功！");
+				if(item){
+				}
+				getTaskDetail();
+			}else{
+				mui.toast(data.message);
+			}
+		});
   	}
 	
 </script>
