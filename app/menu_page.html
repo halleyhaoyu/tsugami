@@ -62,9 +62,12 @@
        
 		mui.ready(function(){
 			//LoginNumber={0}&LoginUser={1}&GroupName={2}
-			var LoginNumber = '1555';// $.query.get("LoginNumber");
-			var LoginUser = '检查A';//$.query.get("LoginUser");
-			var GroupName = '检察人员';//$.query.get("GroupName");
+//			var LoginNumber = '1555';// $.query.get("LoginNumber");
+//			var LoginUser = '检查A';//$.query.get("LoginUser");
+//			var GroupName = '检察人员';//$.query.get("GroupName");
+			var LoginNumber =   $.query.get("LoginNumber");
+			var LoginUser = $.query.get("LoginUser");
+			var GroupName =  $.query.get("GroupName");
 			vm_menu.userInfo.LoginUser=LoginUser;
 			vm_menu.userInfo.LoginNumber=LoginNumber;
 			vm_menu.userInfo.GroupName=GroupName;
