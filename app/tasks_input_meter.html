@@ -168,6 +168,9 @@
 		},
 		methods:{
 			caclulateResult:function(item){
+				
+				console.info("caclulateResult====================>>>>>>>>>>>>>>>");
+				console.info(item);
 		    	var tolerance=0;
 		    	var result2=0;
 		    	if(item.ResultRaw){
@@ -284,12 +287,15 @@
 		var searchData=userInfo;
 		var ID=[];
 		var Result=[];
+		var Error=[];
 		for(var i=0;i<vm_task_input_meter.meterItemList.length;i++){
 			ID.push(vm_task_input_meter.meterItemList[i].ID);
 			Result.push(vm_task_input_meter.meterItemList[i].Result);
+			Error.push(vm_task_input_meter.meterItemList[i].ngFlag?1:0);
 		}
 		searchData.ID=ID;
 		searchData.Result=Result;
+		searchData.Error=Error;
 		vm_task_input_meter.taskSearchInfo.command="save";
 		vm_task_input_meter.taskSearchInfo.data=""+JSON.stringify(searchData);
 		app.postCheckList(vm_task_input_meter.taskSearchInfo,function(data){
