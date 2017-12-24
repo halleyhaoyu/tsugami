@@ -76,21 +76,33 @@
 		 		<th width="15%">测量项目</th>
 		 		<th width="20%">工具</th>
 		 		<th width="10%">单位</th>
-		 		<!--<th width="10%">测定<br>尺寸</th>-->
+		 		 <th width="10%">测定<br>尺寸</th>
 		 		<th width="15%">公差正<br>公差负</th>
 		 		
 		 		<th width="10%">样本数</th>
 		 		<th width="10%">完成数</th>
 		 	</tr>
 		 	<tr class="tr_content" v-for="detailItem in detailItemList">
-		 		<td>{{detailItem.ItemID}}</td>
+		 		<!--<td>{{detailItem.ItemID}}</td>
 		 		<td>{{detailItem.Tools}}</td>
 		 		<td>{{detailItem.Unit}}</td>
-		 		<!---->
+		 		 
 		 		<td>{{detailItem.BaseTolerance}}</td> 
 		 		
 		 		<td>{{detailItem.Qty}}</td> 
 		 		<td>{{detailItem.FinishQty}}</td> 
+		 		-->
+		 		<td>{{detailItem.TypeName}}</td>
+		 		<td>{{detailItem.DeviceName1}}{{detailItem.DeviceName2}}</td>
+		 		<td>{{detailItem.Unit}}</td>
+		 		<td>{{detailItem.Size}}</td>
+		 		<!---->
+		 		<td>{{detailItem.ToleranceMinus}}<br/>{{detailItem.TolerancePlus}}</td> 
+		 		
+		 		<td>{{detailItem.TotalQty}}</td> 
+		 		<td>{{detailItem.FinishQty}}</td> 
+		 		
+		 		
 		 	</tr>
 		 </table>
 		 
@@ -98,8 +110,14 @@
 		 	<tr class="tr_content" v-for="meterItem in meterItemList">
 		 		<td width="20%">钢印号：{{meterItem.Model}}</td>
 		 		<td style="padding: 2px 10px;">
-		 			<input type="number" v-if="meterItem.MeasureCL==1 || meterItem.MeasureCL==3" v-model="meterItem.Result"  style="margin: 2px;"  placeholder="请输入">
-		 			 
+		 			<input type="number" v-if="meterItem.MeasureCL==1 " readonly="readonly" v-model="meterItem.Result" 
+		 				:style="meterItem.ngFlag ? 'border: 1px solid #fa1111;':'border: 1px solid #11fa11;'"  
+		 				style=" width: 35%; margin: 2px;"  placeholder="计算结果">
+		 			
+		 			<input type="number" v-if="meterItem.MeasureCL==1 " v-model="meterItem.ResultRaw" @change="caclulateResult(meterItem)"  style="width: 60%;margin: 2px;"  placeholder="请输入">
+		 			
+		 			<input type="number" v-if="meterItem.MeasureCL==3" v-model="meterItem.Result"  style="margin: 2px;"  placeholder="请输入">
+		 			
 					<div :id="'meterItem_'+meterItem.ID" v-if="meterItem.MeasureCL==2"  
 						:class="getMeasureCL(meterItem.Result)"
 						style="float: left;"
@@ -132,21 +150,41 @@
 //				LoginNumber:1554,
 //				GroupName:'检查组长'
 			},
+			checkInputDetail:{},
 			taskList:[
 			],
 			detailItemList:[],
 			meterItemList:[
-//			{MeasureCL:1,Result:'123',Model:'A'},
-//			{MeasureCL:2,Result:'0',Model:'B'},
-//			{MeasureCL:3,Result:'456',Model:'C'},
-//			{MeasureCL:2,Result:'1',Model:'E'}
+//			{MeasureCL:1,Result:'',Model:'11'},
+//			{MeasureCL:2,Result:'0',Model:'22'},
+//			{MeasureCL:3,Result:'456',Model:'33'},
+//			{MeasureCL:2,Result:'1',Model:'44'}
 			]
 		},computed: {
 		    isAdmin:function(){
 		    	return this.userInfo.GroupName=='检查组长';
-		    },		    
+		    },
+		    	
 		},
 		methods:{
+			caclulateResult:function(item){
+		    	var tolerance=0;
+		    	var result2=0;
+		    	if(item.ResultRaw){
+					tolerance = item.ResultRaw/1000;
+					if(this.checkInputDetail.ToleranceMinus && tolerance<this.checkInputDetail.ToleranceMinus
+					|| this.checkInputDetail.TolerancePlus && tolerance>this.checkInputDetail.TolerancePlus 
+						){
+						item.ngFlag=true;
+					}else{
+						item.ngFlag=false;
+					}
+		    	}
+		    	if(this.checkInputDetail.Base){
+		    		 result2 =tolerance+this.checkInputDetail.Base ;
+		    	}
+		    	item.Result=result2;
+		    },
 			getMeasureCL:function(Result){
 		    	var cl = 'mui-switch mui-switch-blue mui-switch-ok mui-active';
 		    	if(Result=='0'){
@@ -166,6 +204,9 @@
 				}
 				//console.info(JSON.stringify(vm_task_input_meter.meterItemList));
 			}
+		},
+		watch:{
+			
 		}
 	});
 	
@@ -192,6 +233,7 @@
 		var selectProject=app.getPageParam("$selectCheckInputDetailItems");
 		vm_task_input_meter.detailItemList=[];
 		vm_task_input_meter.detailItemList.push(selectProject);	
+		vm_task_input_meter.checkInputDetail=selectProject;
 		 
 		searchData.ProcessFlow_CD=selectTask.ProcessFlow_CD;
 		searchData.FNumber=selectTask.FNumber;
@@ -209,10 +251,18 @@
 				for(var i=0;i<AllList.length;i++){
 					for(var j=0;j<selectTaskInputDetailItems.length;j++){
 						if(AllList[i].Model==selectTaskInputDetailItems[j].Model){
+							AllList[i].ngFlag=false;
 							vm_task_input_meter.meterItemList.push(AllList[i]);
 						}
 					}
 				}
+//				vm_task_input_meter.meterItemList.push({MeasureCL:1,Result:'46.111',Model:'11'});
+//				vm_task_input_meter.meterItemList.push({MeasureCL:2,Result:'0',Model:'22'});
+//				vm_task_input_meter.meterItemList.push({MeasureCL:3,Result:'456',Model:'33'});
+//				vm_task_input_meter.meterItemList.push({MeasureCL:2,Result:'1',Model:'44'});
+//				 
+
+
 				setTimeout(function () {
 					mui('.mui-switch')['switch']();
 				},300);

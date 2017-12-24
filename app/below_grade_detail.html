@@ -72,7 +72,7 @@
 		 		<td>{{detailItem.Size}}</td>
 		 		<td>{{detailItem.ToleranceMinus}}<br>{{detailItem.TolerancePlus}}</td> 
 		 		 
-		 		<td>{{detailItem.Base}}</td>
+		 		<td :style="getItemCss(detailItem)">{{detailItem.Result}}</td>
 		 	</tr>
 		 </table>
 		 
@@ -103,7 +103,7 @@
 			}
 			],
 			detailItemList:[
-//			{TypeName:'1'}
+			
 //			,{TypeName:'2'}
 //			,{TypeName:'3'}
 //			,{TypeName:'4'}
@@ -121,6 +121,26 @@
 		    
 		},
 		methods:{
+			getItemCss:function(item){
+				
+				var css1="background: rgb(123, 232, 104);";
+				var css2="background: rgb(185, 14, 0); color: #ffffff;"; 
+				var sRtn=css1;
+				if(item.Base){
+					if(item.ToleranceMinus && (item.ToleranceMinus+item.Base)>item.Result
+				|| item.TolerancePlus && (item.TolerancePlus+item.Base)<item.Result
+					){
+						//console.info(item);
+						item.ngFlag=true;
+						sRtn=css2;
+					}else{
+						item.ngFlag=false;
+						sRtn=css1;
+					}
+				}
+				console.info(sRtn);
+				return sRtn;
+			}
 		}
 	});
 	
@@ -150,6 +170,9 @@
 			if(data.code==1){
 				var dataList = data.data; // 目前没数据先模拟数据。
 				vm_below_grade_detail.detailItemList=JSON.parse(dataList).detail;
+//				vm_below_grade_detail.detailItemList.push({TypeName:'1',Result:11.94,Base:12,ToleranceMinus:-0.05,TolerancePlus:0.05});
+//				vm_below_grade_detail.detailItemList.push({TypeName:'12',Result:12.94,Base:12,ToleranceMinus:-0.05,TolerancePlus:0.05});
+//				 
 				console.info(vm_below_grade_detail.detailItemList);
 			 	pageIndex=1;
 			}else{
@@ -175,15 +198,24 @@
 		var showInfo='\n'
 		showInfo+='钢印号：'+selectTask.Model+'\n';
 		showInfo+='测量者：'+selectTask.ReceiveUser+'\n';
+		
+		for(var i=0;i<vm_below_grade_detail.detailItemList.length;i++){
+			var item = vm_below_grade_detail.detailItemList[i];
+			if(item.ngFlag){
+				var sMsg= item.TypeName+","+item.ItemName+":"+item.Result+" 超出范围！\n";
+				showInfo+=sMsg;
+			}
+		}
+		
 		showInfo+='时间：'+selectTask.ReceiveDttm+'\n';
 		mui.confirm(showInfo, '不合格确认', ['合格','不合格','取消'], function(e) {
 			switch(e.index){
 				case 0:
-					mui.toast('合格') ;
+					//mui.toast('合格') ;
 					submitGradeDetail(1);
 				break;
 				case 1:
-					mui.toast('不合格') ;
+					//mui.toast('不合格') ;
 					submitGradeDetail(2);
 				break;
 				case 2:
