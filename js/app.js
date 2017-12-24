@@ -212,7 +212,13 @@ owner.hostname='http://210.22.188.236:8020/webapi/Service';
 	 	
 		return owner.postCommon(url,data,callback); 
 	}
-	 
+	owner.postAssembleList=function(data,callback){
+		//var userInfo = app.getState();
+		//view/teachingManage/join.shtml
+		var url=owner.hostname+'/Assemble';  
+	 	
+		return owner.postCommon(url,data,callback); 
+	}
 	
 
 	/*

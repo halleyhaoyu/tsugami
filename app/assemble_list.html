@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+    <title>任务列表</title>
+    
+    <script src="../js/jquery-2.1.4.min.js"></script>
+	<script src="../js/jquery.params.js"></script>
+	<script src="../js/mui.min.js"></script> 
+	<script src="../js/app.js"></script>
+	<script src="../js/vue.min.js"></script>
+	<link href="../css/mui.css" rel="stylesheet"/> 
+    <link href="../css/app.css" rel="stylesheet"/> 
+    <link href="../css/tasks_page.css" rel="stylesheet"/> 
+    <style>
+    .div1{
+    	color: #ffffff;
+    	float: right;
+    	font-size: 0.8em;
+    	padding: 0.5em;
+    	border-bottom: 1px solid #ffffff; 
+    	border-right: 1px solid #ffffff; 
+    	text-align: center;
+    }
+    
+    .mui-switch-ok {
+		background: purple;
+		border: 2px solid purple;
+		background-color: purple;
+		
+	}
+    .mui-switch-ok.mui-active:before
+	{
+	    right: auto;
+	    left: 10px;		
+	    font-size: 14px;	
+	    content: 'OK';		
+	    color: #fff;
+	}
+	
+	.mui-switch-ok:before
+	{
+	    font-size: 14px;		
+	    position: absolute;
+	    top: 3px;
+	    right: 11px;		
+	    content: 'NG';
+	    text-transform: uppercase;		
+	    color: #fff;
+	}
+	
+    </style>
+</head>
+<body>
+	<div id="assemble_list_content">
+		
+	<header class="mui-bar mui-bar-nav top_title" >
+		<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+		<h1 class="mui-title">组装点检项目输入</h1>
+	</header>
+ 
+	<nav id="main_bar" class="mui-bar mui-bar-tab top_title">
+		<div class="div1" style="width: 50%;"><span>标签打印：{{userInfo.PrintTime}}</span></div>
+		<div class="div1" style="width: 50%;"><span>任务单号：{{userInfo.FinterID}}</span></div>
+		<div class="div1" style="width: 33%;"><span>机号：{{userInfo.RandomNo}}</span></div>
+		<div class="div1" style="width: 33%;"><span>品名：{{userInfo.ProductName}}</span></div>
+		<div class="div1" style="width: 33%;"><span>图号：{{userInfo.Fnumber}}</span></div>
+		 
+	</nav>
+   
+ 
+	<div id="item1" class=" mui-content " style=" margin-bottom: 30px;" >
+		 <table >
+		 	<tr class="tr_title">
+				<th>工段</th>
+				<th>点检项目</th>  
+		 		<th>单位</th>
+		 		<th>负值</th>
+		 		<th>正直</th>
+		 		
+		 		<th>测试名称</th>
+		 		<th>实测值</th>
+		 		<th>作业员/时间</th>
+		 	</tr>
+		 	<tr class="tr_content" v-for="item in assembleList">
+				<td>{{item.ProcessName}}</td>
+				<td>{{item.ItemName}}</td>
+		 		<td>{{item.Unit}}</td>
+		 		<td>{{item.PermitMinus}}</td>
+		 		<td>{{item.PermitPlus}}</td>
+		 		
+		 		<td>{{item.CheckResult}}</td>
+		 		<td> 
+		 			 
+		 			<input type="number" v-if="item.InputFormID==1" v-model="item.Result"  style="margin: 2px; width: 5em;"  placeholder="请输入">
+		 			
+					<div :id="'meterItem_'+item.ID" v-if="item.InputFormID==4"  
+						:class="getMeasureCL(item.Result)"
+						style="float: left;"
+						@toggle="changeMeterMeasure(item)"
+						>
+					  <div class="mui-switch-handle"></div>
+					</div>
+		 		</td>
+		 		<td>{{item.UserName}}/{{item.CheckTime}}</td>
+		 		
+		 	</tr>
+		 </table>
+	</div>
+ 
+</div>
+<script type="text/javascript" charset="UTF-8">
+  	mui.init();
+//	onResizeWindow();
+//	    window.onresize = onResizeWindow;
+//	    function onResizeWindow(){
+//	        $("#inputContent").css("width",$(window).width()-92);
+//	    }
+  	 
+  	var vm_assemble_list = new Vue({
+		el: '#assemble_list_content',
+		data: {
+			userInfo:{
+				LoginUser:"",
+				LoginNumber:"",
+				GroupName:"",
+				FinterID:'999-M10',
+				PrintTime:'2017/12/24 10:11',
+				Fnumber:'M10-9999',
+				ProductName:'物品名称',
+				RandomNo:'123456789'
+			},
+			taskSearchInfo:{
+				command:"load",
+				message:"",
+				data:""
+				}
+			,
+			assembleList:[ 
+			{
+		'ID': 1,
+		'FinterID': 'T90001',
+		'ProductID': '图号',
+		'RandomNo': 'M20001',
+		'ProcessID': '1001',
+		'ProcessName': '工段1',
+		'InputFormID': 4,
+		'InputFormName': '初检',
+		'ItemID': 11,
+		'ItemName': '长度',
+		'Unit': 'MM',
+		'PermitMinus': -0.01000,
+		'PermitPlus': 0.01000,
+		'CheckResult': null,
+		'UserID': null,
+		'UserName': null,
+		'Result': null,
+		'CheckTime': null,
+		'CreateDate': null,
+		'CreateUser': null,
+		'ModifyDate': null,
+		'ModifyUser': null
+	},
+	{
+		'ID': 2,
+		'FinterID': 'T90001',
+		'ProductID': '图号',
+		'RandomNo': 'M20001',
+		'ProcessID': '1001',
+		'ProcessName': '工段1',
+		'InputFormID': 4,
+		'InputFormName': '初检',
+		'ItemID': 12,
+		'ItemName': '高度',
+		'Unit': 'MM',
+		'PermitMinus': -0.01000,
+		'PermitPlus': 0.01000,
+		'CheckResult': null,
+		'UserID': null,
+		'UserName': null,
+		'Result': null,
+		'CheckTime': null,
+		'CreateDate': null,
+		'CreateUser': null,
+		'ModifyDate': null,
+		'ModifyUser': null
+	},
+	{
+		'ID': 3,
+		'FinterID': 'T90001',
+		'ProductID': '图号',
+		'RandomNo': 'M20001',
+		'ProcessID': '1001',
+		'ProcessName': '工段1',
+		'InputFormID': 1,
+		'InputFormName': '初检',
+		'ItemID': 13,
+		'ItemName': '宽度',
+		'Unit': 'MM',
+		'PermitMinus': -0.01000,
+		'PermitPlus': 0.01000,
+		'CheckResult': null,
+		'UserID': null,
+		'UserName': null,
+		'Result': null,
+		'CheckTime': null,
+		'CreateDate': null,
+		'CreateUser': null,
+		'ModifyDate': null,
+		'ModifyUser': null
+	}
+			],
+		},
+		methods:{
+			
+			getMeasureCL:function(Result){
+		    	var cl = 'mui-switch mui-switch-blue mui-switch-ok mui-active';
+		    	if(Result=='0'){
+		    		cl = 'mui-switch mui-switch-blue mui-switch-ok mui-active';
+		    	}else{
+		    		cl = 'mui-switch mui-switch-blue mui-switch-ok';
+		    	}
+		    	return cl;
+		    },
+		    changeMeterMeasure:function(item){
+				//console.info(event.detail)
+				//console.info(item);
+				if(event.detail.isActive){
+					item.Result=0;
+				}else{
+					item.Result=1;
+				}
+				//console.info(JSON.stringify(vm_task_input_meter.meterItemList));
+			}
+		}
+	});
+ 
+ 
+	mui.ready(function(){
+  
+		var LoginNumber = $.query.get("LoginNumber");
+		var LoginUser = $.query.get("LoginUser");
+		var FinterID =  $.query.get("FinterID");
+		var ProductID =  $.query.get("ProductID");
+		var RandomNo =  $.query.get("RandomNo");
+		var PrintTime =  $.query.get("PrintTime");
+		var ProductName =  $.query.get("ProductName");
+		var ProcessID =  $.query.get("ProcessID");
+		vm_assemble_list.userInfo.LoginUser=LoginUser;
+		vm_assemble_list.userInfo.LoginNumber=LoginNumber;
+		vm_assemble_list.userInfo.FinterID=FinterID;//任务单号
+		vm_assemble_list.userInfo.Fnumber=ProductID;//图号
+		vm_assemble_list.userInfo.RandomNo=RandomNo;//机号
+		vm_assemble_list.userInfo.PrintTime=PrintTime;//标签打印时间
+		vm_assemble_list.userInfo.ProductName=ProductName;//品名
+		vm_assemble_list.userInfo.ProcessID=ProcessID;//品名	  
+ 
+
+ 
+		var userInfo = vm_assemble_list.userInfo;
+		vm_assemble_list.taskSearchInfo.data=""+JSON.stringify(userInfo);
+			app.postAssembleList(vm_assemble_list.taskSearchInfo,function(data){
+			if(data.code==1){
+				var dataList = data.data; // 
+				console.info(dataList);
+				vm_assemble_list.taskList=JSON.parse(dataList); 
+			}else{
+				mui.toast(data.message);
+			} 
+		});
+	});
+	
+	
+	
+	window.onload=function(){ 
+	}
+	
+</script>
+</body>
+</html>
