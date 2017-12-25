@@ -95,7 +95,7 @@
 		 		
 		 		<td>{{item.CheckResult}}</td>
 		 		<td>
-		 			<input type="number" v-if="item.InputFormID==1" v-model="item.Result"  style="margin: 2px; width: 5em;float: left;"  placeholder="请输入">
+		 			<input type="number" v-if="item.InputFormID<4" v-model="item.Result"  style="margin: 2px; width: 5em;float: left;"  placeholder="请输入">
 		 			<div :id="'meterItem_'+item.ID" v-if="item.InputFormID==4"  
 						:class="getMeasureCL(item.Result)"
 						style="float: left;"
