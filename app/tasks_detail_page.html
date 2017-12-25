@@ -148,15 +148,15 @@
 		console.info("vm_task_detail info >>>>>>>>>>>>> " + login_id + login_name);
 	});
 	
- 
  	function multChangeLockStatusShow(){
+		var userinfo = app.getState();
  		if(!vm_task_detail.multLockFlag){
  			vm_task_detail.multLockFlag=true;
  		}else{
  			vm_task_detail.multLockFlag=false;
  		}
 		vm_task_detail.multSelectQt='';
-		vm_task_detail.selectUser={LoginUser:'',LoginNumber:0,LockUser:'',LockNumber:0,};
+		vm_task_detail.selectUser={LoginUser:userinfo.LoginUser,LoginNumber:userinfo.LoginNumber,LockUser:'',LockNumber:0,};
  	}
    
 	function changeLockStatus(type,item,status){ 
