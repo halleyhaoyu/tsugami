@@ -218,12 +218,15 @@
 		var searchData={LoginUser:vm_assemble_list.userInfo.LoginUser,LoginNumber:vm_assemble_list.userInfo.LoginNumber};
 		var ID=[];
 		var Result=[];
+		var Error=[];
 		for(var i=0;i<vm_assemble_list.assembleList.length;i++){
 			ID.push(vm_assemble_list.assembleList[i].ID);
 			Result.push(vm_assemble_list.assembleList[i].Result); 
+			Error.push(0);
 		}
 		searchData.ID=ID;
 		searchData.Result=Result;
+		searchData.Error=Error;
 		vm_assemble_list.taskSearchInfo.command="save";
 		vm_assemble_list.taskSearchInfo.data=""+JSON.stringify(searchData);
 		app.postAssembleList(vm_assemble_list.taskSearchInfo,function(data){
