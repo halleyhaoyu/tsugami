@@ -41,7 +41,7 @@
 		 		<th>品名</th>
 		 		<th>数量</th>
 		 		<th>检查完成</th>
-		 		<th>接受时间</th>
+		 		<th>接收时间</th>
 		 	</tr>
 		 	<tr class="tr_content" v-for="item in taskList">
 				<td>{{item.ProcessFlow_CD}}</td>
@@ -61,7 +61,7 @@
 		 		<th width="20%">测量者</th>
 		 		<th width="20%">结果</th>
 		 		<th width="20%">完成时间</th>
-		 		<th width="20%"><i v-if="isAdmin" @tap="multChangeLockStatusShow()" class="fa fa-tasks" style="font-size: 1.5em; color: #333333;"></i></th>
+		 		<th width="20%"><i @tap="multChangeLockStatusShow()" class="fa fa-tasks" style="font-size: 1.5em; color: #333333;"></i></th>
 		 	</tr>
 		 	<tr class="tr_content" v-if="multLockFlag">
 		 		<td colspan="2"><input type="text" @tap="op_select_class()" v-model="selectUser.LockUser"  style="margin: 2px;"  placeholder="测量者" readonly="readonly"></td>
@@ -156,8 +156,16 @@
  			vm_task_detail.multLockFlag=false;
  		}
 		vm_task_detail.multSelectQt='';
-		vm_task_detail.selectUser={LoginUser:userinfo.LoginUser,LoginNumber:userinfo.LoginNumber,LockUser:'',LockNumber:0,};
- 	}
+		if(vm_task_detail.isAdmin){
+			vm_task_detail.selectUser={LoginUser:userinfo.LoginUser,LoginNumber:userinfo.LoginNumber,LockUser:'',LockNumber:0,};
+ 		}else{
+			vm_task_detail.selectUser={
+				LoginUser:userinfo.LoginUser,
+				LoginNumber:userinfo.LoginNumber,
+				LockUser:vm_task_detail.selectUser.LoginUser,
+				LockNumber:vm_task_detail.selectUser.LoginNumber,};
+ 		}
+	}
    
 	function changeLockStatus(type,item,status){ 
 		//{"command":"lock","message":"","data":"{\"ID\":[102],\"LockFL\":[1],\"LoginUser\":\"user2\",\"LoginNumber\":\"1554\"}"}
@@ -165,12 +173,11 @@
 		var ids=[];
 		var LockFL=[];
 		// 如果是组长，根据数量和未锁定的信息进行处理，否则，使用当前用户。
-		if(type==0 && vm_task_detail.isAdmin){ //批量操作情况
+		if(type==0 ){ //批量操作情况 && vm_task_detail.isAdmin
 			var searchData=vm_task_detail.selectUser;
 			//console.info(searchData);
-			if(vm_task_detail.multSelectQt){
-				var selectCont=0;
-				
+			if(vm_task_detail.multSelectQt && searchData.LockNumber){
+				var selectCont=0;				
 				for(var i=0;i<vm_task_detail.taskDetailList.length;i++){
 					if(vm_task_detail.taskDetailList[i].LockFl==0){
 						//vm_task_detail.taskDetailList[i].LockFl=1;
