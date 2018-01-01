@@ -68,7 +68,7 @@
 		<div class="div1" style="width: 50%;"><span>任务单号：{{userInfo.FinterID}}</span></div>
 		<div class="div1" style="width: 33%;"><span>机号：{{userInfo.RandomNo}}</span></div>
 		<div class="div1" style="width: 33%;"><span>品名：{{userInfo.ProductName}}</span></div>
-		<div class="div1" style="width: 33%;"><span>图号：{{userInfo.Fnumber}}</span></div>
+		<div class="div1" style="width: 33%;"><span>图号：{{userInfo.FNumber}}</span></div>
 		 
 	</nav>
    
@@ -128,7 +128,7 @@
 				GroupName:"",
 				FinterID:'999-M10',
 				PrintTime:'2017/12/24 10:11',
-				Fnumber:'M10-9999',
+				FNumber:'M10-9999',
 				ProductName:'物品名称',
 				RandomNo:'123456789'
 			},
@@ -178,7 +178,7 @@
 		vm_assemble_list.userInfo.LoginUser=LoginUser;
 		vm_assemble_list.userInfo.LoginNumber=LoginNumber;
 		vm_assemble_list.userInfo.FinterID=FinterID;//任务单号
-		vm_assemble_list.userInfo.Fnumber=ProductID;//图号
+		vm_assemble_list.userInfo.FNumber=ProductID;//图号
 		vm_assemble_list.userInfo.RandomNo=RandomNo;//机号
 		vm_assemble_list.userInfo.PrintTime=PrintTime;//标签打印时间
 		vm_assemble_list.userInfo.ProductName=ProductName;//品名
@@ -218,12 +218,15 @@
 		var searchData={LoginUser:vm_assemble_list.userInfo.LoginUser,LoginNumber:vm_assemble_list.userInfo.LoginNumber};
 		var ID=[];
 		var Result=[];
+		var Error=[];
 		for(var i=0;i<vm_assemble_list.assembleList.length;i++){
 			ID.push(vm_assemble_list.assembleList[i].ID);
 			Result.push(vm_assemble_list.assembleList[i].Result); 
+			Error.push(0);
 		}
 		searchData.ID=ID;
 		searchData.Result=Result;
+		searchData.Error=Error;
 		vm_assemble_list.taskSearchInfo.command="save";
 		vm_assemble_list.taskSearchInfo.data=""+JSON.stringify(searchData);
 		app.postAssembleList(vm_assemble_list.taskSearchInfo,function(data){
