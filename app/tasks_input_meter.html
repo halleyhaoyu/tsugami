@@ -101,11 +101,14 @@
 		 	<tr class="tr_content" v-for="meterItem in meterItemList">
 		 		<td width="20%">钢印号：{{meterItem.Model}}</td>
 		 		<td style="padding: 2px 10px;">
-		 			<input type="number" v-if="meterItem.MeasureCL==1 " readonly="readonly" v-model="meterItem.Result" 
+		 			<!--<input type="number" v-if="meterItem.MeasureCL==1 " readonly="readonly" v-model="meterItem.Result" 
 		 				:style="meterItem.ngFlag ? 'border: 1px solid #fa1111;':'border: 1px solid #11fa11;'"  
-		 				style=" width: 35%; margin: 2px;"  placeholder="计算结果">
-		 			
-		 			<input type="number" v-if="meterItem.MeasureCL==1 " v-model="meterItem.ResultRaw" @change="caclulateResult(meterItem)"  style="width: 60%;margin: 2px;"  placeholder="请输入">
+		 				style=" width: 35%; margin: 2px;"  placeholder="计算结果">-->
+		 			<div v-if="meterItem.MeasureCL==1 " :style="meterItem.ngFlag ? 'border: 1px solid #fa1111;':'border: 1px solid #11fa11;'"  
+		 				style=" float: left; width: 35%; padding: 8px; font-size: 16px; margin: 3px; height: 39px; border-radius: 3px;">
+		 				{{meterItem.Result}}
+		 			</div>
+		 			<input type="number" v-if="meterItem.MeasureCL==1 " v-model="meterItem.ResultRaw" @input="caclulateResult(meterItem)"  style="width: 60%;margin: 2px;"  placeholder="请输入">
 		 			
 		 			<input type="number" v-if="meterItem.MeasureCL==3" v-model="meterItem.Result"  style="margin: 2px;"  placeholder="请输入">
 		 			
@@ -250,12 +253,6 @@
 						}
 					}
 				}
-//				vm_task_input_meter.meterItemList.push({MeasureCL:1,Result:'46.111',Model:'11'});
-//				vm_task_input_meter.meterItemList.push({MeasureCL:2,Result:'0',Model:'22'});
-//				vm_task_input_meter.meterItemList.push({MeasureCL:3,Result:'456',Model:'33'});
-//				vm_task_input_meter.meterItemList.push({MeasureCL:2,Result:'1',Model:'44'});
-//				 
-
 
 				setTimeout(function () {
 					mui('.mui-switch')['switch']();
@@ -263,6 +260,15 @@
 			}else{
 				mui.toast(data.message);
 			}
+			
+			
+				vm_task_input_meter.meterItemList.push({MeasureCL:1,Result:'46.111',Model:'11'});
+				vm_task_input_meter.meterItemList.push({MeasureCL:2,Result:'0',Model:'22'});
+				vm_task_input_meter.meterItemList.push({MeasureCL:3,Result:'456',Model:'33'});
+				vm_task_input_meter.meterItemList.push({MeasureCL:2,Result:'1',Model:'44'});
+//				 
+
+
 		});		 
 	}
 	window.onload=function(){

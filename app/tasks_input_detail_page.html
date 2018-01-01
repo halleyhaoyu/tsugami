@@ -117,6 +117,7 @@
 		methods:{
 			CheckAll:function(){
 				if(this.checkAllFlag){
+					this.selectItemIds=[];
 					for(var i=0;i<this.taskDetailList.length;i++){
 						this.selectItemIds.push(this.taskDetailList[i].ID);
 					}

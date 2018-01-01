@@ -208,18 +208,18 @@
 		}
 		
 		showInfo+='时间：'+selectTask.ReceiveDttm+'\n';
-		mui.confirm(showInfo, '不合格确认', ['合格','不合格','取消'], function(e) {
+		mui.confirm(showInfo, '不合格确认', ['合格','取消','不合格'], function(e) {
 			switch(e.index){
 				case 0:
 					//mui.toast('合格') ;
 					submitGradeDetail(1);
 				break;
 				case 1:
+					mui.toast('取消') ;break;
+				case 2:
 					//mui.toast('不合格') ;
 					submitGradeDetail(2);
 				break;
-				case 2:
-					mui.toast('取消') ;break;
 				default: break;
 			}
 		})
