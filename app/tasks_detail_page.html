@@ -27,7 +27,7 @@
 	<header class="mui-bar mui-bar-nav top_title" >
 		<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
 		<h1 class="mui-title">检查任务明细</h1>
-		<i class="fa fa-cloud-upload" @tap="upProject()" style="font-size: 1.7em; color: #ffffff; margin: 0.2em; float: right;"></i>
+		<i class="fa fa-cloud-upload"  @tap="upProject()" style="font-size: 1.7em; color: #ffffff; margin: 0.2em; float: right;"></i>
 	</header>
  
    
@@ -97,6 +97,7 @@
   	var vm_task_detail = new Vue({
 		el: '#task_detail_content',
 		data: {
+			uploadFlag:true,
 			multLockFlag:false,
 			multSelectQt:'',
 			taskSearchInfo:{
@@ -340,16 +341,23 @@
 		vm_task_detail.taskSearchInfo.command="audit";
 		vm_task_detail.taskSearchInfo.data=""+JSON.stringify(searchData);
 		//console.info("vm_task_detail.taskSearchInfo"); 
-			app.postTaskList(vm_task_detail.taskSearchInfo,function(data){
-			if(data.code==1){
-				mui.toast("操作成功！");
-				if(item){
+		if(vm_task_detail.uploadFlag){
+  			vm_task_detail.uploadFlag=false;
+  			app.postTaskList(vm_task_detail.taskSearchInfo,function(data){
+				if(data.code==1){
+					mui.back();
+	//				mui.toast("操作成功！");
+	//				if(item){
+	//				}
+	//				getTaskDetail();
+				}else{
+					mui.toast(data.message);
 				}
-				getTaskDetail();
-			}else{
-				mui.toast(data.message);
-			}
-		});
+				
+				vm_task_detail.uploadFlag=true;
+			});
+		}
+		
   	}
 	
 </script>

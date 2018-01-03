@@ -77,7 +77,7 @@
 		 		<th width="20%">工具</th>
 		 		<th width="10%">单位</th>
 		 		 <th width="10%">测定<br>尺寸</th>
-		 		<th width="15%">公差正<br>公差负</th>
+		 		<th width="15%">公差负<br>公差正</th>
 		 		
 		 		<th width="10%">样本数</th>
 		 		<th width="10%">完成数</th>
@@ -169,8 +169,8 @@
 		    	var result2=0;
 		    	if(item.ResultRaw){
 					tolerance = item.ResultRaw/1000;
-					if(this.checkInputDetail.ToleranceMinus && tolerance<this.checkInputDetail.ToleranceMinus
-					|| this.checkInputDetail.TolerancePlus && tolerance>this.checkInputDetail.TolerancePlus 
+					if(this.checkInputDetail.ToleranceMinus!=undefined && this.checkInputDetail.ToleranceMinus!=null && tolerance<this.checkInputDetail.ToleranceMinus
+					|| this.checkInputDetail.TolerancePlus!=undefined && this.checkInputDetail.TolerancePlus!=null && tolerance>this.checkInputDetail.TolerancePlus 
 						){
 						item.ngFlag=true;
 					}else{
@@ -196,8 +196,10 @@
 				//console.info(item);
 				if(event.detail.isActive){
 					item.Result=0;
+					item.ngFlag=false;
 				}else{
 					item.Result=1;
+					item.ngFlag=true;
 				}
 				//console.info(JSON.stringify(vm_task_input_meter.meterItemList));
 			}
@@ -248,26 +250,26 @@
 				for(var i=0;i<AllList.length;i++){
 					for(var j=0;j<selectTaskInputDetailItems.length;j++){
 						if(AllList[i].Model==selectTaskInputDetailItems[j].Model){
-							AllList[i].ngFlag=false;
+							AllList[i].ngFlag=(AllList[i].MeasureCL==2 && AllList[i].Result==1)?true:false;
 							vm_task_input_meter.meterItemList.push(AllList[i]);
 						}
 					}
 				}
 
-				setTimeout(function () {
-					mui('.mui-switch')['switch']();
-				},300);
 			}else{
 				mui.toast(data.message);
 			}
 			
 			
-//				vm_task_input_meter.meterItemList.push({MeasureCL:1,Result:'46.111',Model:'11'});
-//				vm_task_input_meter.meterItemList.push({MeasureCL:2,Result:'0',Model:'22'});
-//				vm_task_input_meter.meterItemList.push({MeasureCL:3,Result:'456',Model:'33'});
-//				vm_task_input_meter.meterItemList.push({MeasureCL:2,Result:'1',Model:'44'});
+				vm_task_input_meter.meterItemList.push({MeasureCL:1,Result:'46.111',Model:'11',ngFlag:false});
+				vm_task_input_meter.meterItemList.push({MeasureCL:2,Result:'0',Model:'22',ngFlag:false});
+				vm_task_input_meter.meterItemList.push({MeasureCL:3,Result:'456',Model:'33',ngFlag:false});
+				vm_task_input_meter.meterItemList.push({MeasureCL:2,Result:'1',Model:'44',ngFlag:true});
+				setTimeout(function () {
+					mui('.mui-switch')['switch']();
+				},300);
 //				 
-
+ 
 
 		});		 
 	}
