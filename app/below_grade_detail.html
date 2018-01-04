@@ -170,14 +170,15 @@
 			if(data.code==1){
 				var dataList = data.data; // 目前没数据先模拟数据。
 				vm_below_grade_detail.detailItemList=JSON.parse(dataList).detail;
-//				vm_below_grade_detail.detailItemList.push({TypeName:'1',Result:11.94,Base:12,ToleranceMinus:-0.05,TolerancePlus:0.05});
-//				vm_below_grade_detail.detailItemList.push({TypeName:'12',Result:12.94,Base:12,ToleranceMinus:-0.05,TolerancePlus:0.05});
-//				 
+//			
 				console.info(vm_below_grade_detail.detailItemList);
 			 	pageIndex=1;
 			}else{
 				mui.toast(data.message);
 			}
+//				vm_below_grade_detail.detailItemList.push({TypeName:'1',Result:11.95,Base:12,ToleranceMinus:-0.05,TolerancePlus:0.05});
+//				vm_below_grade_detail.detailItemList.push({TypeName:'12',Result:12.94,Base:12,ToleranceMinus:-0.05,TolerancePlus:0.05});
+//				 
 		});
 	}
 	window.onload=function(){

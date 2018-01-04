@@ -226,7 +226,6 @@
  
  
 	mui.ready(function(){
-  
 		var LoginNumber = $.query.get("LoginNumber");
 		var LoginUser = $.query.get("LoginUser");
 		var FinterID =  $.query.get("FinterID");
@@ -306,7 +305,19 @@
 //			});
 			
 		});
+		
+		
+		
+	    mui.back=function(){
+		 console.info("back>>>>>>>>>>>>"); 
+		 nativeMethod.toActivity("check");
+		}; 
+		
+		
+		
 	});
+	
+	
 	
 	function saveMeterInput(){
 		var searchData={LoginUser:vm_assemble_list.userInfo.LoginUser,LoginNumber:vm_assemble_list.userInfo.LoginNumber};
@@ -325,8 +336,8 @@
 		vm_assemble_list.taskSearchInfo.data=""+JSON.stringify(searchData);
 		app.postAssembleList(vm_assemble_list.taskSearchInfo,function(data){
 			if(data.code==1){ 
-				 console.info("back"); 
-				mui.back();
+				 console.info("back");
+				 mui.back();
 			}
 			mui.toast(data.message);
 		});
