@@ -4717,6 +4717,14 @@ body > .mui-progressbar
     border: 2px solid #007aff;
     background-color: #007aff;
 }
+.mui-switch-green.mui-active
+{
+    border: 2px solid #10b903;
+    background-color: #10b903;
+}
+
+
+
 
 .mui-content.mui-fade
 {

@@ -24,3 +24,14 @@ table{
 	font-size: 200%; color: #00bd4d;
 }
 
+
+.tr_content2{
+	height: 4.5em; 
+	font-size: 0.85em;
+	background: #ffffff;
+	border-bottom: 1px solid #CCCCCC;
+}
+.tr_content2 td{
+	text-align: center;
+}
+

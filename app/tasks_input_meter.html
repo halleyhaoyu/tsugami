@@ -14,9 +14,9 @@
     <link href="../css/font-awesome-4.7.0/css/font-awesome.min.css" rel="stylesheet"> 
     <style>
     .mui-switch-ok {
-		background: purple;
-		border: 2px solid purple;
-		background-color: purple;
+		background: d60a25;
+		border: 2px solid d60a25;
+		background-color: d60a25;
 		
 	}
     .mui-switch-ok.mui-active:before
@@ -183,11 +183,11 @@
 		    	item.Result=result2;
 		    },
 			getMeasureCL:function(Result){
-		    	var cl = 'mui-switch mui-switch-blue mui-switch-ok mui-active';
+		    	var cl = 'mui-switch mui-switch-green mui-switch-ok mui-active';
 		    	if(Result=='0'){
-		    		cl = 'mui-switch mui-switch-blue mui-switch-ok mui-active';
+		    		cl = 'mui-switch mui-switch-green mui-switch-ok mui-active';
 		    	}else{
-		    		cl = 'mui-switch mui-switch-blue mui-switch-ok';
+		    		cl = 'mui-switch mui-switch-green mui-switch-ok';
 		    	}
 		    	return cl;
 		    },
@@ -212,12 +212,7 @@
 	
 	mui.ready(function(){
 		vm_task_input_meter.userInfo = app.getState();
-		getTaskDetail();
-		
-		
-		
-			
-			
+		getTaskDetail(); 
 	});
 	
    
@@ -255,22 +250,19 @@
 						}
 					}
 				}
-
+				setTimeout(function () {
+					mui('.mui-switch')['switch']();
+				},300);
 			}else{
 				mui.toast(data.message);
 			}
 			
 			
-				vm_task_input_meter.meterItemList.push({MeasureCL:1,Result:'46.111',Model:'11',ngFlag:false});
-				vm_task_input_meter.meterItemList.push({MeasureCL:2,Result:'0',Model:'22',ngFlag:false});
-				vm_task_input_meter.meterItemList.push({MeasureCL:3,Result:'456',Model:'33',ngFlag:false});
-				vm_task_input_meter.meterItemList.push({MeasureCL:2,Result:'1',Model:'44',ngFlag:true});
-				setTimeout(function () {
-					mui('.mui-switch')['switch']();
-				},300);
+//				vm_task_input_meter.meterItemList.push({MeasureCL:1,Result:'46.111',Model:'11',ngFlag:false});
+//				vm_task_input_meter.meterItemList.push({MeasureCL:2,Result:'0',Model:'22',ngFlag:false});
+//				vm_task_input_meter.meterItemList.push({MeasureCL:3,Result:'456',Model:'33',ngFlag:false});
+//				vm_task_input_meter.meterItemList.push({MeasureCL:2,Result:'1',Model:'44',ngFlag:true});
 //				 
- 
-
 		});		 
 	}
 	window.onload=function(){

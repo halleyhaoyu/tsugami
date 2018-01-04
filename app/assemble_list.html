@@ -26,9 +26,9 @@
     }
     
     .mui-switch-ok {
-		background: purple;
-		border: 2px solid purple;
-		background-color: purple;
+		background: #d60a25;
+		border: 2px solid #d60a25;
+		background-color: #d60a25;
 		
 	}
     .mui-switch-ok.mui-active:before
@@ -86,17 +86,21 @@
 		 		<th>实测值</th>
 		 		<th>作业员/时间</th>
 		 	</tr>
-		 	<tr class="tr_content" v-for="item in assembleList">
-				<td>{{item.ProcessName}}</td>
-				<td>{{item.ItemName}}</td>
-		 		<td>{{item.Unit}}</td>
-		 		<td>{{item.PermitMinus}}</td>
-		 		<td>{{item.PermitPlus}}</td>
+		 	<tr class="tr_content2" v-for="item in assembleList">
+				<td v-if="item.rowSpan>0" :rowSpan="item.rowSpan">{{item.ProcessName}}</td>
+				<td v-if="item.rowSpan>0" :rowSpan="item.rowSpan">{{item.ItemName}}</td>
+		 		<td v-if="item.rowSpan>0" :rowSpan="item.rowSpan">{{item.Unit}}</td>
+		 		<td v-if="item.rowSpan>0" :rowSpan="item.rowSpan">{{item.PermitMinus}}</td>
+		 		<td v-if="item.rowSpan>0" :rowSpan="item.rowSpan">{{item.PermitPlus}}</td>
 		 		
-		 		<td>{{item.CheckResult}}</td>
-		 		<td>
-		 			<input type="number" v-if="item.InputFormID<4" v-model="item.Result"  style="margin: 2px; width: 5em;float: left;"  placeholder="请输入">
-		 			<div :id="'meterItem_'+item.ID" v-if="item.InputFormID==4"  
+		 		<td style="border-left: 1px solid #CCCCCC;">{{item.CheckResult}}</td>
+		 		<td style="padding-left: 10px;">
+		 			<input type="number" v-if="item.InputFormID<4"
+		 				v-model="item.ResultRaw"
+		 				@input="caclulateResult(item)"
+		 				:style="item.ngFlag ? 'border: 1px solid #fa1111;':'border: 1px solid #11fa11;'"
+		 				style="margin: 2px; width: 5em;float: left;"  placeholder="请输入">
+		 			<div :id="'item_'+item.ID" v-if="item.InputFormID==4"
 						:class="getMeasureCL(item.Result)"
 						style="float: left;"
 						@toggle="changeMeterMeasure(item)"
@@ -122,6 +126,7 @@
   	var vm_assemble_list = new Vue({
 		el: '#assemble_list_content',
 		data: {
+			checkInputDetail:{},
 			userInfo:{
 				LoginUser:"",
 				LoginNumber:"",
@@ -141,13 +146,66 @@
 			assembleList:[],
 		},
 		methods:{
-			
-			getMeasureCL:function(Result){
-		    	var cl = 'mui-switch mui-switch-blue mui-switch-ok mui-active';
-		    	if(Result=='0'){
-		    		cl = 'mui-switch mui-switch-blue mui-switch-ok mui-active';
+			caclulateResult:function(item){
+				
+				console.info("caclulateResult====================>>>>>>>>>>>>>>>");
+				console.info(item);
+		    	var tolerance=0;
+		    	var result2=0;
+		    	if(item.InputFormID==1){		    		
+			    	if(item.ResultRaw){
+						tolerance = item.ResultRaw;
+						if(item.PermitMinus!=undefined && item.PermitMinus!=null && tolerance<item.PermitMinus
+						|| item.PermitPlus!=undefined && item.PermitPlus!=null && tolerance>item.PermitPlus 
+							){
+							item.ngFlag=true;
+						}else{
+							item.ngFlag=false;
+						}
+			    	}
+			    	item.Result=tolerance;
 		    	}else{
-		    		cl = 'mui-switch mui-switch-blue mui-switch-ok';
+		    		var itemList=[{ID:0,ResultRaw:0},{ID:0,ResultRaw:0},{ID:0,ResultRaw:0}]
+		    		var tempIndex=0;
+		    		for(var i=0;i<this.assembleList.length;i++){
+		    			if(this.assembleList[i].ItemID==item.ItemID){
+		    				itemList[tempIndex]=this.assembleList[i];
+		    				tempIndex++;
+		    			}
+		    		}
+		    		tolerance = parseInt(itemList[0].ResultRaw==''?0:itemList[0].ResultRaw)-parseInt(itemList[1].ResultRaw==''?0:itemList[1].ResultRaw);
+		    		if(itemList[2].ResultRaw==undefined || itemList[2].ResultRaw==null ){
+		    			itemList[2].ResultRaw=0;
+		    		}
+					if(item.PermitMinus!=undefined && item.PermitMinus!=null || item.PermitPlus!=undefined && item.PermitPlus!=null 
+						){
+						var minus=parseInt(item.PermitMinus)+parseInt(itemList[2].ResultRaw==''?0:itemList[2].ResultRaw);
+						var plus=parseInt(item.PermitPlus)+parseInt(itemList[2].ResultRaw==''?0:itemList[2].ResultRaw);
+						if(tolerance<minus || tolerance> plus){
+							itemList[0].ngFlag=true;
+							itemList[1].ngFlag=true;
+							itemList[2].ngFlag=true;
+						}else{							
+							itemList[0].ngFlag=false;
+							itemList[1].ngFlag=false;
+							itemList[2].ngFlag=false;
+						}
+					}else{
+						itemList[0].ngFlag=false;
+						itemList[1].ngFlag=false;
+						itemList[2].ngFlag=false;
+					}
+					itemList[0].Result=itemList[0].ResultRaw;
+					itemList[1].Result=itemList[1].ResultRaw;
+					itemList[2].Result=itemList[2].ResultRaw;
+		    	}
+		    },
+			getMeasureCL:function(Result){
+		    	var cl = 'mui-switch mui-switch-green mui-switch-ok mui-active';
+		    	if(Result=='0'){
+		    		cl = 'mui-switch mui-switch-green mui-switch-ok mui-active';
+		    	}else{
+		    		cl = 'mui-switch mui-switch-green mui-switch-ok';
 		    	}
 		    	return cl;
 		    },
@@ -156,8 +214,10 @@
 				//console.info(item);
 				if(event.detail.isActive){
 					item.Result=0;
+					item.ngFlag=false;
 				}else{
 					item.Result=1;
+					item.ngFlag=true;
 				}
 				//console.info(JSON.stringify(vm_task_input_meter.meterItemList));
 			}
@@ -192,22 +252,56 @@
 			if(data.code==1){
 				var dataList = data.data; // 
 				console.info(dataList);
-				vm_assemble_list.assembleList=JSON.parse(dataList); 
-				 
+				vm_assemble_list.assembleList=[];
+				//var assembleList = JSON.parse(dataList);
+				
 			}else{
 				mui.toast(data.message);
-			} 
+			}
 			// 模拟测试数据。
-//			vm_assemble_list.assembleList.push({
-//				'ID': 1,'ProcessName': '工段1','InputFormID': 4,'ItemID': 13,'ItemName': '宽度','Unit': 'MM','PermitMinus': -0.01000,'PermitPlus': 0.01000, 'UserName': 'bb','Result': 0,'CheckTime': '2017-10-10',
-//			});
-//				vm_assemble_list.assembleList.push({
-//				'ID': 2,'ProcessName': '工段1','InputFormID': 4,'ItemID': 13,'ItemName': '宽度','Unit': 'MM','PermitMinus': -0.01000,'PermitPlus': 0.01000, 'UserName': 'bb','Result': 1,'CheckTime': '2017-10-10',
-//			});
-//				vm_assemble_list.assembleList.push({
-//				'ID': 3,'ProcessName': '工段1','InputFormID': 1,'ItemID': 13,'ItemName': '宽度','Unit': 'MM','PermitMinus': -0.01000,'PermitPlus': 0.01000, 'UserName': 'bb','Result': "",'CheckTime': '2017-10-10',
-//			});
-			
+			var assembleList=[];
+			 assembleList.push({
+				'ID': 1,'ProcessName': '工段1','InputFormID': 4,'ItemID': 1,'ItemName': '宽度','Unit': 'MM','PermitMinus': -0.01000,'PermitPlus': 0.01000,CheckResult:'轴承内径', 'UserName': 'bb','Result': 0,'CheckTime': '2017-10-10',
+			});
+			assembleList.push({
+				'ID': 2,'ProcessName': '工段1','InputFormID': 4,'ItemID': 2,'ItemName': '宽度','Unit': 'MM','PermitMinus': -0.01000,'PermitPlus': 0.01000,CheckResult:'轴承内径', 'UserName': 'bb','Result': 1,'CheckTime': '2017-10-10',
+			});
+			assembleList.push({
+				'ID': 3,'ProcessName': '工段1','InputFormID': 2,'ItemID': 3,'ItemName': '宽度','Unit': 'MM','PermitMinus': -0.01000,'PermitPlus': 0.01000,CheckResult:'轴承内径', 'UserName': 'bb','Result': "",'CheckTime': '2017-10-10',
+			});
+			assembleList.push({
+				'ID': 3,'ProcessName': '工段1','InputFormID': 2,'ItemID': 3,'ItemName': '宽度','Unit': 'MM','PermitMinus': -0.01000,'PermitPlus': 0.01000,CheckResult:'轴承外径', 'UserName': 'bb','Result': "",'CheckTime': '2017-10-10',
+			});
+			assembleList.push({
+				'ID': 3,'ProcessName': '工段1','InputFormID': 1,'ItemID': 4,'ItemName': '宽度','Unit': 'MM','PermitMinus': -0.01000,'PermitPlus': 0.01000,CheckResult:'轴承内径', 'UserName': 'bb','Result': "",'CheckTime': '2017-10-10',
+			});
+			assembleList.push({
+				'ID': 3,'ProcessName': '工段1','InputFormID': 3,'ItemID': 5,'ItemName': '宽度','Unit': 'MM','PermitMinus': -1,'PermitPlus': 1,CheckResult:'轴承内径', 'UserName': 'bb','Result': "",'CheckTime': '2017-10-10',
+			});
+			assembleList.push({
+				'ID': 3,'ProcessName': '工段1','InputFormID': 3,'ItemID': 5,'ItemName': '宽度','Unit': 'MM','PermitMinus': -1,'PermitPlus': 1,CheckResult:'轴承内径', 'UserName': 'bb','Result': "",'CheckTime': '2017-10-10',
+			});
+			assembleList.push({
+				'ID': 3,'ProcessName': '工段1','InputFormID': 3,'ItemID': 5,'ItemName': '宽度','Unit': 'MM','PermitMinus': -1,'PermitPlus': 1,CheckResult:'轴承内径', 'UserName': 'bb','Result': "",'CheckTime': '2017-10-10',
+			});
+			var currentItemID='';
+			for(var i=0;i<assembleList.length;i++){
+					var assembleInfo = assembleList[i];
+					assembleInfo.ngFlag=false;
+					assembleInfo.Result=0;
+					assembleInfo.ResultRaw='';
+					if(currentItemID!=assembleInfo.ItemID){
+						currentItemID=assembleInfo.ItemID;
+						if(assembleInfo.InputFormID<4){
+							assembleInfo.rowSpan=assembleInfo.InputFormID;
+						}else{
+							assembleInfo.rowSpan=1;
+						}
+					}else{
+						assembleInfo.rowSpan=0;
+					}
+					vm_assemble_list.assembleList.push(assembleInfo);
+				}
 			setTimeout(function () {
 					mui('.mui-switch')['switch']();
 				},300);
@@ -221,8 +315,8 @@
 		var Error=[];
 		for(var i=0;i<vm_assemble_list.assembleList.length;i++){
 			ID.push(vm_assemble_list.assembleList[i].ID);
-			Result.push(vm_assemble_list.assembleList[i].Result); 
-			Error.push(0);
+			Result.push(vm_assemble_list.assembleList[i].Result);  
+			Error.push(vm_assemble_list.assembleList[i].ngFlag?1:0);
 		}
 		searchData.ID=ID;
 		searchData.Result=Result;
