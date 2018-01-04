@@ -253,58 +253,58 @@
 				var dataList = data.data; // 
 				console.info(dataList);
 				vm_assemble_list.assembleList=[];
-				//var assembleList = JSON.parse(dataList);
-				
+				var assembleList = JSON.parse(dataList);
+				var currentItemID='';
+				for(var i=0;i<assembleList.length;i++){
+						var assembleInfo = assembleList[i];
+						assembleInfo.ngFlag=false;
+						assembleInfo.Result=0;
+						assembleInfo.ResultRaw='';
+						if(currentItemID!=assembleInfo.ItemID){
+							currentItemID=assembleInfo.ItemID;
+							if(assembleInfo.InputFormID<4){
+								assembleInfo.rowSpan=assembleInfo.InputFormID;
+							}else{
+								assembleInfo.rowSpan=1;
+							}
+						}else{
+							assembleInfo.rowSpan=0;
+						}
+						vm_assemble_list.assembleList.push(assembleInfo);
+					}
+				setTimeout(function () {
+						mui('.mui-switch')['switch']();
+					},300);
 			}else{
 				mui.toast(data.message);
 			}
 			// 模拟测试数据。
-			var assembleList=[];
-			 assembleList.push({
-				'ID': 1,'ProcessName': '工段1','InputFormID': 4,'ItemID': 1,'ItemName': '宽度','Unit': 'MM','PermitMinus': -0.01000,'PermitPlus': 0.01000,CheckResult:'轴承内径', 'UserName': 'bb','Result': 0,'CheckTime': '2017-10-10',
-			});
-			assembleList.push({
-				'ID': 2,'ProcessName': '工段1','InputFormID': 4,'ItemID': 2,'ItemName': '宽度','Unit': 'MM','PermitMinus': -0.01000,'PermitPlus': 0.01000,CheckResult:'轴承内径', 'UserName': 'bb','Result': 1,'CheckTime': '2017-10-10',
-			});
-			assembleList.push({
-				'ID': 3,'ProcessName': '工段1','InputFormID': 2,'ItemID': 3,'ItemName': '宽度','Unit': 'MM','PermitMinus': -0.01000,'PermitPlus': 0.01000,CheckResult:'轴承内径', 'UserName': 'bb','Result': "",'CheckTime': '2017-10-10',
-			});
-			assembleList.push({
-				'ID': 3,'ProcessName': '工段1','InputFormID': 2,'ItemID': 3,'ItemName': '宽度','Unit': 'MM','PermitMinus': -0.01000,'PermitPlus': 0.01000,CheckResult:'轴承外径', 'UserName': 'bb','Result': "",'CheckTime': '2017-10-10',
-			});
-			assembleList.push({
-				'ID': 3,'ProcessName': '工段1','InputFormID': 1,'ItemID': 4,'ItemName': '宽度','Unit': 'MM','PermitMinus': -0.01000,'PermitPlus': 0.01000,CheckResult:'轴承内径', 'UserName': 'bb','Result': "",'CheckTime': '2017-10-10',
-			});
-			assembleList.push({
-				'ID': 3,'ProcessName': '工段1','InputFormID': 3,'ItemID': 5,'ItemName': '宽度','Unit': 'MM','PermitMinus': -1,'PermitPlus': 1,CheckResult:'轴承内径', 'UserName': 'bb','Result': "",'CheckTime': '2017-10-10',
-			});
-			assembleList.push({
-				'ID': 3,'ProcessName': '工段1','InputFormID': 3,'ItemID': 5,'ItemName': '宽度','Unit': 'MM','PermitMinus': -1,'PermitPlus': 1,CheckResult:'轴承内径', 'UserName': 'bb','Result': "",'CheckTime': '2017-10-10',
-			});
-			assembleList.push({
-				'ID': 3,'ProcessName': '工段1','InputFormID': 3,'ItemID': 5,'ItemName': '宽度','Unit': 'MM','PermitMinus': -1,'PermitPlus': 1,CheckResult:'轴承内径', 'UserName': 'bb','Result': "",'CheckTime': '2017-10-10',
-			});
-			var currentItemID='';
-			for(var i=0;i<assembleList.length;i++){
-					var assembleInfo = assembleList[i];
-					assembleInfo.ngFlag=false;
-					assembleInfo.Result=0;
-					assembleInfo.ResultRaw='';
-					if(currentItemID!=assembleInfo.ItemID){
-						currentItemID=assembleInfo.ItemID;
-						if(assembleInfo.InputFormID<4){
-							assembleInfo.rowSpan=assembleInfo.InputFormID;
-						}else{
-							assembleInfo.rowSpan=1;
-						}
-					}else{
-						assembleInfo.rowSpan=0;
-					}
-					vm_assemble_list.assembleList.push(assembleInfo);
-				}
-			setTimeout(function () {
-					mui('.mui-switch')['switch']();
-				},300);
+//			var assembleList=[];
+//			 assembleList.push({
+//				'ID': 1,'ProcessName': '工段1','InputFormID': 4,'ItemID': 1,'ItemName': '宽度','Unit': 'MM','PermitMinus': -0.01000,'PermitPlus': 0.01000,CheckResult:'轴承内径', 'UserName': 'bb','Result': 0,'CheckTime': '2017-10-10',
+//			});
+//			assembleList.push({
+//				'ID': 2,'ProcessName': '工段1','InputFormID': 4,'ItemID': 2,'ItemName': '宽度','Unit': 'MM','PermitMinus': -0.01000,'PermitPlus': 0.01000,CheckResult:'轴承内径', 'UserName': 'bb','Result': 1,'CheckTime': '2017-10-10',
+//			});
+//			assembleList.push({
+//				'ID': 3,'ProcessName': '工段1','InputFormID': 2,'ItemID': 3,'ItemName': '宽度','Unit': 'MM','PermitMinus': -0.01000,'PermitPlus': 0.01000,CheckResult:'轴承内径', 'UserName': 'bb','Result': "",'CheckTime': '2017-10-10',
+//			});
+//			assembleList.push({
+//				'ID': 3,'ProcessName': '工段1','InputFormID': 2,'ItemID': 3,'ItemName': '宽度','Unit': 'MM','PermitMinus': -0.01000,'PermitPlus': 0.01000,CheckResult:'轴承外径', 'UserName': 'bb','Result': "",'CheckTime': '2017-10-10',
+//			});
+//			assembleList.push({
+//				'ID': 3,'ProcessName': '工段1','InputFormID': 1,'ItemID': 4,'ItemName': '宽度','Unit': 'MM','PermitMinus': -0.01000,'PermitPlus': 0.01000,CheckResult:'轴承内径', 'UserName': 'bb','Result': "",'CheckTime': '2017-10-10',
+//			});
+//			assembleList.push({
+//				'ID': 3,'ProcessName': '工段1','InputFormID': 3,'ItemID': 5,'ItemName': '宽度','Unit': 'MM','PermitMinus': -1,'PermitPlus': 1,CheckResult:'轴承内径', 'UserName': 'bb','Result': "",'CheckTime': '2017-10-10',
+//			});
+//			assembleList.push({
+//				'ID': 3,'ProcessName': '工段1','InputFormID': 3,'ItemID': 5,'ItemName': '宽度','Unit': 'MM','PermitMinus': -1,'PermitPlus': 1,CheckResult:'轴承内径', 'UserName': 'bb','Result': "",'CheckTime': '2017-10-10',
+//			});
+//			assembleList.push({
+//				'ID': 3,'ProcessName': '工段1','InputFormID': 3,'ItemID': 5,'ItemName': '宽度','Unit': 'MM','PermitMinus': -1,'PermitPlus': 1,CheckResult:'轴承内径', 'UserName': 'bb','Result': "",'CheckTime': '2017-10-10',
+//			});
+			
 		});
 	});
 	
