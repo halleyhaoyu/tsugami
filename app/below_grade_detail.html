@@ -61,7 +61,7 @@
 		 		<th width="20%">检查项目</th>
 		 		<th width="10%">单位</th>
 		 		<th width="10%">测定<br>尺寸</th>
-		 		<th width="15%">公差正<br>公差负</th>
+		 		<th width="15%">公差负<br>公差正</th>
 		 		
 		 		<th width="10%">钢印号<br>{{taskList[0].Model}}</th>
 		 	</tr>
@@ -127,8 +127,8 @@
 				var css2="background: rgb(185, 14, 0); color: #ffffff;"; 
 				var sRtn=css1;
 				if(item.Base){
-					if(item.ToleranceMinus && (item.ToleranceMinus+item.Base)>item.Result
-				|| item.TolerancePlus && (item.TolerancePlus+item.Base)<item.Result
+					if(item.ToleranceMinus!=undefined && item.ToleranceMinus!=null && (item.ToleranceMinus+item.Base)>item.Result
+				|| item.TolerancePlus!=undefined &&item.TolerancePlus!=null && (item.TolerancePlus+item.Base)<item.Result
 					){
 						//console.info(item);
 						item.ngFlag=true;
