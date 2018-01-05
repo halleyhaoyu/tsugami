@@ -78,13 +78,16 @@
 			console.info("GroupName>>>>>>>>>>>>>"+vm_menu.userInfo.GroupName);
 			
 			//TODO 放开更新权限注释
+//			mui("#demo1").progressbar().show();
+			//callback为用户点击蒙版时自动执行的回调；
+			
 		 	getMenuList();
 		});
-		
+		 
 		function getMenuList(){
 			app.getMenuList(vm_menu.userInfo.GroupName,function(data){
 				if(data.code==1){
-					var dataList = data.data; // 目前没数据先模拟数据。
+					var dataList = data.data; // 目前没数据先模拟数据。 
 					console.info(dataList);
 					var menu2 =JSON.parse(dataList);
 					for(var i=0;i<menu2.length;i++){
@@ -96,7 +99,7 @@
 					}
 				}else{
 					mui.toast(data.message);
-				} 
+				}
 			});
 		}
 		function openPage(item) {

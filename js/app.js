@@ -161,6 +161,8 @@ owner.hostname='http://210.22.188.236:8020/webapi/Service';
 	 * */
 	owner.getCommon=function(url,callback){
 			//console.log(url);
+        var mask = mui.createMask(function(){});
+        mask.show();//显示遮罩
 		mui.ajax( url,{
 			dataType:'json',//服务器返回json格式数据
 			crossDomain:true,
@@ -170,6 +172,7 @@ owner.hostname='http://210.22.188.236:8020/webapi/Service';
 			headers:{'Content-Type':'application/json; charset=utf-8'},	              
 			success:function(data){
 				console.info(JSON.stringify(data));
+				mask.close();//关闭遮罩
 				return callback(data);
 			},
 			error:function(xhr,type,errorThrown){
@@ -178,6 +181,7 @@ owner.hostname='http://210.22.188.236:8020/webapi/Service';
 					code:-1,
 					msg:"获取数据失败！"
 				}
+				mask.close();//关闭遮罩
 					return callback(msg);
 			}
 		});
@@ -228,6 +232,9 @@ owner.hostname='http://210.22.188.236:8020/webapi/Service';
 			console.log(JSON.stringify(data));
 			//url+=owner.getPramString(data);
 			console.log(url);
+			
+        var mask = mui.createMask(function(){});
+        mask.show();//显示遮罩
 		mui.ajax( url,{
 			data:JSON.stringify(data),
 			crossDomain:true,
@@ -242,6 +249,7 @@ owner.hostname='http://210.22.188.236:8020/webapi/Service';
 			processData:false,
 			success:function(data){
 				//console.info(JSON.stringify(data));
+				mask.close();//关闭遮罩
 				return callback(data);
 			},
 			error:function(xhr,type,errorThrown){
@@ -252,6 +260,7 @@ owner.hostname='http://210.22.188.236:8020/webapi/Service';
 					code:-1,
 					msg:"数据提交失败！"
 				}
+				mask.close();//关闭遮罩
 				return callback(msg);
 			}
 		});
