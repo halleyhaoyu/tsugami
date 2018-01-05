@@ -6309,6 +6309,9 @@ Function.prototype.bind = Function.prototype.bind || function(to) {
 	$.createMask = function(callback) {
 		var element = document.createElement('div');
 		element.classList.add(CLASS_BACKDROP);
+		var element2=document.createElement('div');
+		element2.classList.add('spinner');
+		element.appendChild(element2);
 		element.addEventListener($.EVENT_MOVE, $.preventDefault);
 		element.addEventListener('tap', function() {
 			mask.close();
