@@ -72,7 +72,8 @@
 		 		<td>{{detailItem.Size}}</td>
 		 		<td>{{detailItem.ToleranceMinus}}<br>{{detailItem.TolerancePlus}}</td> 
 		 		 
-		 		<td :style="getItemCss(detailItem)">{{detailItem.Result}}</td>
+		 		<td v-if="detailItem.MeasureCL==2" :style="getItemCss(detailItem)">{{detailItem.Result==1?'NG':'OK'}}</td>
+		 		<td v-else :style="getItemCss(detailItem)">{{detailItem.Result}}</td>
 		 	</tr>
 		 </table>
 		 
@@ -123,19 +124,23 @@
 		methods:{
 			getItemCss:function(item){
 				
-				var css1="background: rgb(123, 232, 104);";
-				var css2="background: rgb(185, 14, 0); color: #ffffff;"; 
+				var css1="background: #10b903; ";
+				var css2="background: #d60a25; color: #ffffff;"; 
 				var sRtn=css1;
 				if(item.Base){
-					if(item.ToleranceMinus!=undefined && item.ToleranceMinus!=null && (item.ToleranceMinus+item.Base)>item.Result
-				|| item.TolerancePlus!=undefined &&item.TolerancePlus!=null && (item.TolerancePlus+item.Base)<item.Result
+					if(item.MeasureCL==2){
+						item.ngFlag=item.Result==1?true:false;
+						sRtn=item.Result==1?css2:css1;
+					}else{						
+						if(item.ToleranceMinus!=undefined && item.ToleranceMinus!=null && (item.ToleranceMinus+item.Base)>item.Result
+						|| item.TolerancePlus!=undefined &&item.TolerancePlus!=null && (item.TolerancePlus+item.Base)<item.Result
 					){
-						//console.info(item);
-						item.ngFlag=true;
-						sRtn=css2;
-					}else{
-						item.ngFlag=false;
-						sRtn=css1;
+							item.ngFlag=true;
+							sRtn=css2;
+						}else{
+							item.ngFlag=false;
+							sRtn=css1;
+						}
 					}
 				}
 				console.info(sRtn);
@@ -176,9 +181,11 @@
 			}else{
 				mui.toast(data.message);
 			}
-//				vm_below_grade_detail.detailItemList.push({TypeName:'1',Result:11.95,Base:12,ToleranceMinus:-0.05,TolerancePlus:0.05});
-//				vm_below_grade_detail.detailItemList.push({TypeName:'12',Result:12.94,Base:12,ToleranceMinus:-0.05,TolerancePlus:0.05});
-//				 
+//				vm_below_grade_detail.detailItemList.push({MeasureCL:3,TypeName:'1',Result:11.95,Base:12,ToleranceMinus:-0.05,TolerancePlus:0.05});
+//				vm_below_grade_detail.detailItemList.push({MeasureCL:3,TypeName:'12',Result:12.94,Base:12,ToleranceMinus:-0.05,TolerancePlus:0.05});
+// 			 	vm_below_grade_detail.detailItemList.push({MeasureCL:2,TypeName:'12',Result:1,Base:12,ToleranceMinus:-0.05,TolerancePlus:0.05});
+// 			 	vm_below_grade_detail.detailItemList.push({MeasureCL:2,TypeName:'12',Result:0,Base:12,ToleranceMinus:-0.05,TolerancePlus:0.05});
+// 			 
 		});
 	}
 	window.onload=function(){
