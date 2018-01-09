@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+    <title>任务列表</title>
+    
+    <script src="../js/jquery-2.1.4.min.js"></script>
+	<script src="../js/jquery.params.js"></script>
+	<script src="../js/mui.min.js"></script> 
+	<script src="../js/app.js"></script>
+	<script src="../js/vue.min.js"></script>
+	<link href="../css/mui.css" rel="stylesheet"/> 
+    <link href="../css/app.css" rel="stylesheet"/> 
+    <link href="../css/tasks_page.css" rel="stylesheet"/> 
+    <link href="../css/font-awesome-4.7.0/css/font-awesome.min.css" rel="stylesheet"> 
+    <style>
+    .div1{
+    	color: #ffffff;
+    	float: right;
+    	font-size: 0.8em;
+    	padding: 0.5em;
+    	border-bottom: 1px solid #ffffff; 
+    	border-right: 1px solid #ffffff; 
+    	text-align: center;
+    }
+    
+    .mui-switch-ok {
+		background: #d60a25;
+		border: 2px solid #d60a25;
+		background-color: #d60a25;
+		
+	}
+    .mui-switch-ok.mui-active:before
+	{
+	    right: auto;
+	    left: 10px;		
+	    font-size: 14px;	
+	    content: 'OK';		
+	    color: #fff;
+	}
+	
+	.mui-switch-ok:before
+	{
+	    font-size: 14px;		
+	    position: absolute;
+	    top: 3px;
+	    right: 11px;		
+	    content: 'NG';
+	    text-transform: uppercase;		
+	    color: #fff;
+	}
+	
+    </style>
+</head>
+<body>
+	<div id="assemble_detail_content">
+		
+	<header class="mui-bar mui-bar-nav top_title" >
+		<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+		<h1 class="mui-title">组装点检项目输入</h1>
+		<i class="fa fa-save" @tap="saveMeterInput()" style="font-size: 1.7em; color: #ffffff; margin: 0.2em; float: right;"></i>
+	
+	</header>
+ 
+	<nav id="main_bar" class="mui-bar mui-bar-tab top_title">
+		<div class="div1" style="width: 50%;"><span>标签打印：{{userInfo.PrintTime}}</span></div>
+		<div class="div1" style="width: 50%;"><span>任务单号：{{userInfo.FinterID}}</span></div>
+		<div class="div1" style="width: 33%;"><span>机号：{{userInfo.RandomNo}}</span></div>
+		<div class="div1" style="width: 33%;"><span>品名：{{userInfo.ProductName}}</span></div>
+		<div class="div1" style="width: 33%;"><span>图号：{{userInfo.FNumber}}</span></div>
+		 
+	</nav>
+   
+ 
+	<div id="item1" class=" mui-content " style=" margin-bottom: 30px;" >
+		 <table >
+		 	<tr class="tr_title">
+				<th>工段</th>
+				<th>点检项目</th>  
+		 		<th>单位</th>
+		 		<th>负值</th>
+		 		<th>正直</th>
+		 		
+		 		<th>测试名称</th>
+		 		<th>实测值</th>
+		 		<th>作业员/时间</th>
+		 	</tr>
+		 	<tr class="tr_content2" v-for="item in assembleList">
+				<td v-if="item.rowSpan>0" :rowSpan="item.rowSpan">{{item.ProcessName}}</td>
+				<td v-if="item.rowSpan>0" :rowSpan="item.rowSpan">{{item.ItemName}}</td>
+		 		<td v-if="item.rowSpan>0" :rowSpan="item.rowSpan">{{item.Unit}}</td>
+		 		<td v-if="item.rowSpan>0" :rowSpan="item.rowSpan">{{item.PermitMinus}}</td>
+		 		<td v-if="item.rowSpan>0" :rowSpan="item.rowSpan">{{item.PermitPlus}}</td>
+		 		
+		 		<td style="border-left: 1px solid #CCCCCC;">{{item.CheckResult}}</td>
+		 		<td style="padding-left: 10px;">
+		 			<input :readonly="selectTaskInfo.EditFlag==0 || (item.UserID!=null && item.UserID!=userInfo.LoginNumber )" 
+		 				type="number" v-if="item.InputFormID<4"
+		 				v-model="item.ResultRaw"
+		 				@input="caclulateResult(item)"
+		 				:style="item.ngFlag ? 'border: 1px solid #fa1111;':'border: 1px solid #11fa11;'"
+		 				style="margin: 2px; width: 5em;float: left;"  placeholder="请输入">
+		 			<div :id="'item_'+item.ID" v-if="item.InputFormID==4 && selectTaskInfo.EditFlag==1 && (item.UserID==null || item.UserID==userInfo.LoginNumber )"
+						:class="getMeasureCL(item)"
+						style="float: left;"
+						@toggle="changeMeterMeasure(item)"
+						> 
+					  <div class="mui-switch-handle"></div>
+					</div>
+		 			<div v-if="item.InputFormID==4 && (selectTaskInfo.EditFlag==0 || (item.UserID!=null && item.UserID!=userInfo.LoginNumber )) ">
+						 {{item.Result==0?'OK':'NG'}}
+					</div>
+		 		</td>
+		 		<td>{{item.UserName}}/{{item.CheckTime}}/{{item.UserID}}</td>
+		 		
+		 	</tr>
+		 </table>
+	</div>
+ 
+</div>
+<script type="text/javascript" charset="UTF-8">
+  	mui.init();
+//	onResizeWindow();
+//	    window.onresize = onResizeWindow;
+//	    function onResizeWindow(){
+//	        $("#inputContent").css("width",$(window).width()-92);
+//	    }
+  	 
+  	var vm_assemble_detail = new Vue({
+		el: '#assemble_detail_content',
+		data: {
+			selectTaskInfo:{},
+			checkInputDetail:{},
+			userInfo:{
+				LoginUser:"",
+				LoginNumber:"",
+				GroupName:"",
+				FinterID:'999-M10',
+				PrintTime:'2017/12/24 10:11',
+				FNumber:'M10-9999',
+				ProductName:'物品名称',
+				RandomNo:'123456789'
+			},
+			taskSearchInfo:{
+				command:"load",
+				message:"",
+				data:""
+				}
+			,
+			assembleList:[],
+		},
+		methods:{
+			caclulateResult:function(item){
+				
+				console.info("caclulateResult====================>>>>>>>>>>>>>>>");
+				console.info(item);
+		    	var tolerance=0;
+		    	var result2=0;
+		    	if(item.InputFormID==1){		    		
+			    	if(item.ResultRaw){
+						tolerance = item.ResultRaw;
+						if(item.PermitMinus!=undefined && item.PermitMinus!=null && tolerance<item.PermitMinus
+						|| item.PermitPlus!=undefined && item.PermitPlus!=null && tolerance>item.PermitPlus 
+							){
+							item.ngFlag=true;
+						}else{
+							item.ngFlag=false;
+						}
+			    	}
+			    	item.Result=tolerance;
+		    	}else{
+		    		var itemList=[{ID:0,ResultRaw:0},{ID:0,ResultRaw:0},{ID:0,ResultRaw:0}]
+		    		var tempIndex=0;
+		    		for(var i=0;i<this.assembleList.length;i++){
+		    			if(this.assembleList[i].ItemID==item.ItemID){
+		    				itemList[tempIndex]=this.assembleList[i];
+		    				tempIndex++;
+		    			}
+		    		}
+		    		tolerance = parseInt(itemList[0].ResultRaw==''?0:itemList[0].ResultRaw)-parseInt(itemList[1].ResultRaw==''?0:itemList[1].ResultRaw);
+		    		if(itemList[2].ResultRaw==undefined || itemList[2].ResultRaw==null ){
+		    			itemList[2].ResultRaw=0;
+		    		}
+					if(item.PermitMinus!=undefined && item.PermitMinus!=null || item.PermitPlus!=undefined && item.PermitPlus!=null 
+						){
+						var minus=parseInt(item.PermitMinus)+parseInt(itemList[2].ResultRaw==''?0:itemList[2].ResultRaw);
+						var plus=parseInt(item.PermitPlus)+parseInt(itemList[2].ResultRaw==''?0:itemList[2].ResultRaw);
+						if(tolerance<minus || tolerance> plus){
+							itemList[0].ngFlag=true;
+							itemList[1].ngFlag=true;
+							itemList[2].ngFlag=true;
+						}else{							
+							itemList[0].ngFlag=false;
+							itemList[1].ngFlag=false;
+							itemList[2].ngFlag=false;
+						}
+					}else{
+						itemList[0].ngFlag=false;
+						itemList[1].ngFlag=false;
+						itemList[2].ngFlag=false;
+					}
+					itemList[0].Result=itemList[0].ResultRaw;
+					itemList[1].Result=itemList[1].ResultRaw;
+					itemList[2].Result=itemList[2].ResultRaw;
+		    	}
+		    },
+			getMeasureCL:function(item){
+		    	var cl = 'mui-switch mui-switch-green mui-switch-ok mui-active';
+		    	if(item.Result=='0'){
+		    		cl = 'mui-switch mui-switch-green mui-switch-ok mui-active';
+		    	}else{
+		    		cl = 'mui-switch mui-switch-green mui-switch-ok';
+		    	}
+		    	return cl;
+		    },
+		    changeMeterMeasure:function(item){
+				//console.info(event.detail)
+				//console.info(item);
+				if(event.detail.isActive){
+					item.Result=0;
+					item.ngFlag=false;
+				}else{
+					item.Result=1;
+					item.ngFlag=true;
+				}
+				//console.info(JSON.stringify(vm_task_input_meter.meterItemList));
+			}
+		}
+	});
+ 
+ 
+	mui.ready(function(){
+		
+		vm_assemble_detail.userInfo = app.getState(); 
+		var selectTask=app.getPageParam("$selectAssembleTaskItem");	
+		selectTask.EditFlag=1;
+		vm_assemble_detail.selectTaskInfo=selectTask;
+		
+		 
+		var FinterID = selectTask.FinterID;
+		var ProductID =  selectTask.ProductID;
+		var RandomNo = selectTask.RandomNo;
+		var PrintTime = selectTask.PrintTime;//  selectTask.;
+		var ProductName =  selectTask.ProductName;
+		var ProcessID =  selectTask.ProcessID; 
+		vm_assemble_detail.userInfo.FinterID=FinterID;//任务单号
+		vm_assemble_detail.userInfo.FNumber=ProductID;//图号
+		vm_assemble_detail.userInfo.RandomNo=RandomNo;//机号
+		vm_assemble_detail.userInfo.PrintTime=PrintTime;//标签打印时间
+		vm_assemble_detail.userInfo.ProductName=ProductName;//品名
+		vm_assemble_detail.userInfo.ProcessID=ProcessID;//品名	  
+ 
+
+ 
+		var userInfo = vm_assemble_detail.userInfo;
+		vm_assemble_detail.taskSearchInfo.data=""+JSON.stringify(userInfo);
+			app.postAssembleList(vm_assemble_detail.taskSearchInfo,function(data){
+			if(data.code==1){
+				var dataList = data.data; // 
+				console.info(dataList);
+				vm_assemble_detail.assembleList=[];
+				
+				var assembleList = JSON.parse(dataList);
+				var currentItemID='';
+				for(var i=0;i<assembleList.length;i++){
+					var assembleInfo = assembleList[i];
+					assembleInfo.ngFlag=true;
+					//assembleInfo.Result=0;
+					assembleInfo.ResultRaw=assembleInfo.Result;
+					if(currentItemID!=assembleInfo.ItemID){
+						currentItemID=assembleInfo.ItemID;
+						if(assembleInfo.InputFormID<4){
+							assembleInfo.rowSpan=assembleInfo.InputFormID;
+						}else{
+							assembleInfo.rowSpan=1;
+							assembleInfo.ngFlag=assembleInfo.Result==0?false:true;
+							//assembleInfo.Result=1;
+							
+						}
+					}else{
+						assembleInfo.rowSpan=0;
+					}
+					vm_assemble_detail.assembleList.push(assembleInfo);
+				}
+				setTimeout(function () {
+						mui('.mui-switch')['switch']();
+				},300);
+					
+				for(var i=0;i<vm_assemble_detail.assembleList.length;i++){					
+					vm_assemble_detail.caclulateResult(vm_assemble_detail.assembleList[i]);
+				}
+//					
+			}else{
+				mui.toast(data.message);
+			}
+			// 模拟测试数据。
+//			var assembleList=[];
+//			 assembleList.push({
+//				'ID': 1,'ProcessName': '工段1','InputFormID': 4,'ItemID': 1,
+//				'ItemName': '宽度','Unit': 'MM','PermitMinus': -0.01000,
+//				'PermitPlus': 0.01000,CheckResult:'轴承内径', 'UserName': 'bb',
+//				'Result': 0,'CheckTime': '2017-10-10',
+//				UserID:null,UserName:'dd',Result:0
+//			 });
+//			assembleList.push({
+//				'ID': 2,'ProcessName': '工段1','InputFormID': 4,'ItemID': 2,'ItemName': '宽度','Unit': 'MM','PermitMinus': -0.01000,'PermitPlus': 0.01000,CheckResult:'轴承内径', 'UserName': 'bb','Result': 1,'CheckTime': '2017-10-10',
+//				UserID:16719,UserName:'aaa',Result:1
+//			});
+//			assembleList.push({
+//				'ID': 3,'ProcessName': '工段1','InputFormID': 2,'ItemID': 3,'ItemName': '宽度','Unit': 'MM','PermitMinus': -0.01000,'PermitPlus': 0.01000,CheckResult:'轴承内径', 'UserName': 'bb','Result': "",'CheckTime': '2017-10-10',
+//				UserID:null,UserName:'aaa',Result:1
+//			});
+//			assembleList.push({
+//				'ID': 3,'ProcessName': '工段1','InputFormID': 2,'ItemID': 3,'ItemName': '宽度','Unit': 'MM','PermitMinus': -0.01000,'PermitPlus': 0.01000,CheckResult:'轴承外径', 'UserName': 'bb','Result': "",'CheckTime': '2017-10-10',
+//				UserID:null,UserName:'aaa',Result:2});
+//			assembleList.push({
+//				'ID': 3,'ProcessName': '工段1','InputFormID': 1,'ItemID': 4,'ItemName': '宽度','Unit': 'MM','PermitMinus': -0.01000,'PermitPlus': 0.01000,CheckResult:'轴承内径', 'UserName': 'bb','Result': "",'CheckTime': '2017-10-10',
+//				UserID:null,UserName:'bb',Result:0.01});
+//			assembleList.push({
+//				'ID': 3,'ProcessName': '工段1','InputFormID': 3,'ItemID': 5,'ItemName': '宽度','Unit': 'MM','PermitMinus': -1,'PermitPlus': 1,CheckResult:'轴承内径', 'UserName': 'bb','Result': "",'CheckTime': '2017-10-10',
+//				UserID:null,UserName:'aaa',Result:1});
+//			assembleList.push({
+//				'ID': 3,'ProcessName': '工段1','InputFormID': 3,'ItemID': 5,'ItemName': '宽度','Unit': 'MM','PermitMinus': -1,'PermitPlus': 1,CheckResult:'轴承内径', 'UserName': 'bb','Result': "",'CheckTime': '2017-10-10',
+//			 	UserID:null,UserName:'aaa',Result:20});
+//			assembleList.push({
+//				'ID': 3,'ProcessName': '工段1','InputFormID': 3,'ItemID': 5,'ItemName': '宽度','Unit': 'MM','PermitMinus': -1,'PermitPlus': 1,CheckResult:'轴承内径', 'UserName': 'bb','Result': "",'CheckTime': '2017-10-10',
+//				UserID:null,UserName:'aaa',Result:0
+//			});
+			
+			 		
+			
+		});
+		
+		
+		
+//	    mui.back=function(){
+//		 console.info("back>>>>>>>>>>>>"); 
+//		 nativeMethod.toActivity("check");
+//		}; 
+//		
+		
+		
+	});
+	
+	
+	
+	function saveMeterInput(){
+		var searchData={LoginUser:vm_assemble_detail.userInfo.LoginUser,LoginNumber:vm_assemble_detail.userInfo.LoginNumber};
+		var ID=[];
+		var Result=[];
+		var Error=[];
+		for(var i=0;i<vm_assemble_detail.assembleList.length;i++){
+			ID.push(vm_assemble_detail.assembleList[i].ID);
+			Result.push(vm_assemble_detail.assembleList[i].Result);  
+			Error.push(vm_assemble_detail.assembleList[i].ngFlag?1:0);
+		}
+		searchData.ID=ID;
+		searchData.Result=Result;
+		searchData.Error=Error;
+		vm_assemble_detail.taskSearchInfo.command="save";
+		vm_assemble_detail.taskSearchInfo.data=""+JSON.stringify(searchData);
+		app.postAssembleList(vm_assemble_detail.taskSearchInfo,function(data){
+			if(data.code==1){ 
+				 console.info("back");
+				 mui.back();
+			}
+			mui.toast(data.message);
+		});
+	}
+	
+	
+	window.onload=function(){ 
+	}
+	
+</script>
+</body>
+</html>

@@ -51,18 +51,41 @@
 	    color: #fff;
 	}
 	
+	.btn_b{
+		float: left;
+		display: block;
+	    width: 5em;
+	    height: 2.5em;
+	    border-radius: 5px;
+	    padding: 7px 2px;
+	    margin: 3px;
+	    border: 1px solid #0062CC;
+	    color: #0062CC;
+	}
+	.btn_g{
+		float: left;
+		display: block;
+	    width: 5em;
+	    height: 2.5em;
+	    border-radius: 5px;
+	    padding: 7px 2px;
+	    margin: 3px;
+	    border: 1px solid #10B903;
+	    color: #10B903;
+	}
+	
     </style>
 </head>
 <body>
-	<div id="assemble_list_content">
+	<div id="assemble_task_list_content">
 		
 	<header class="mui-bar mui-bar-nav top_title" >
 		<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
-		<h1 class="mui-title">组装点检项目输入</h1>
-		<i class="fa fa-save" @tap="saveMeterInput()" style="font-size: 1.7em; color: #ffffff; margin: 0.2em; float: right;"></i>
+		<h1 class="mui-title">组装任务一览</h1>
+		<!--<i class="fa fa-save" @tap="saveMeterInput()" style="font-size: 1.7em; color: #ffffff; margin: 0.2em; float: right;"></i>-->
 	
 	</header>
- 
+<!-- 
 	<nav id="main_bar" class="mui-bar mui-bar-tab top_title">
 		<div class="div1" style="width: 50%;"><span>标签打印：{{userInfo.PrintTime}}</span></div>
 		<div class="div1" style="width: 50%;"><span>任务单号：{{userInfo.FinterID}}</span></div>
@@ -71,44 +94,36 @@
 		<div class="div1" style="width: 33%;"><span>图号：{{userInfo.FNumber}}</span></div>
 		 
 	</nav>
-   
+   -->
  
 	<div id="item1" class=" mui-content " style=" margin-bottom: 30px;" >
 		 <table >
 		 	<tr class="tr_title">
-				<th>工段</th>
-				<th>点检项目</th>  
-		 		<th>单位</th>
-		 		<th>负值</th>
-		 		<th>正直</th>
-		 		
-		 		<th>测试名称</th>
-		 		<th>实测值</th>
-		 		<th>作业员/时间</th>
+				<!--<th>任务单号</th>-->
+				<th>序号</th>
+		 		<th>产品名称</th>
+		 		<!--<th>工段号</th>-->
+		 		<th>工段名称</th>
+		 		<th>机号</th>
+		 		<th>状态</th>
+		 		<th>操作</th>
 		 	</tr>
-		 	<tr class="tr_content2" v-for="item in assembleList">
-				<td v-if="item.rowSpan>0" :rowSpan="item.rowSpan">{{item.ProcessName}}</td>
-				<td v-if="item.rowSpan>0" :rowSpan="item.rowSpan">{{item.ItemName}}</td>
-		 		<td v-if="item.rowSpan>0" :rowSpan="item.rowSpan">{{item.Unit}}</td>
-		 		<td v-if="item.rowSpan>0" :rowSpan="item.rowSpan">{{item.PermitMinus}}</td>
-		 		<td v-if="item.rowSpan>0" :rowSpan="item.rowSpan">{{item.PermitPlus}}</td>
-		 		
-		 		<td style="border-left: 1px solid #CCCCCC;">{{item.CheckResult}}</td>
+		 	<tr class="tr_content2" v-for="(item,index) in assembleTaskList">
+				<!--<td  >{{item.FinterID}}</td>-->
+				<td>{{index+1}}</td>
+				<td  >{{item.ProductID}}</td>
+				<!--<td  >{{item.ProcessID}}</td>-->
+				<td  >{{item.ProcessName}}</td>
+				<td  >{{item.RandomNo}}</td>
+				  
+				
+				<td  >{{getStatus(item)}}</td>
+		 		 
 		 		<td style="padding-left: 10px;">
-		 			<input type="number" v-if="item.InputFormID<4"
-		 				v-model="item.ResultRaw"
-		 				@input="caclulateResult(item)"
-		 				:style="item.ngFlag ? 'border: 1px solid #fa1111;':'border: 1px solid #11fa11;'"
-		 				style="margin: 2px; width: 5em;float: left;"  placeholder="请输入">
-		 			<div :id="'item_'+item.ID" v-if="item.InputFormID==4"
-						:class="getMeasureCL(item.Result)"
-						style="float: left;"
-						@toggle="changeMeterMeasure(item)"
-						>
-					  <div class="mui-switch-handle"></div>
-					</div>
+		 			 <a class="btn_b" v-if="item.OperationFlag!=0"  @tap="openTaskDetail(item)">查看</a>
+		 			 <a class="btn_g" v-if="item.OperationFlag==2" @tap="submitAssembleTask(item)">提交</a> 
+		 			 <a class="btn_b" v-if="item.EditFlag==1" @tap="openTaskDetail(item)">录入</a>
 		 		</td>
-		 		<td>{{item.UserName}}/{{item.CheckTime}}</td>
 		 		
 		 	</tr>
 		 </table>
@@ -123,8 +138,8 @@
 //	        $("#inputContent").css("width",$(window).width()-92);
 //	    }
   	 
-  	var vm_assemble_list = new Vue({
-		el: '#assemble_list_content',
+  	var vm_assemble_task_list = new Vue({
+		el: '#assemble_task_list_content',
 		data: {
 			checkInputDetail:{},
 			userInfo:{
@@ -138,89 +153,64 @@
 				RandomNo:'123456789'
 			},
 			taskSearchInfo:{
-				command:"load",
+				command:"list",
 				message:"",
 				data:""
 				}
 			,
-			assembleList:[],
+			assembleTaskList:[
+//			 {
+//	"ID": 565,
+//	"FinterID": "WORK16050864",
+//	"ProductID": "2.3220-S2011-9010",
+//	"ProcessID": "11",
+//	"ProcessName": "动平衡",
+//	"RandomNo": "PB0012",
+//	"StartState": 3,
+//	"OperationFlag": 3,
+//	"ReportFlag": 1,
+//	"EditFlag": 0
+//},
+//{
+//	"ID": 568,
+//	"FinterID": "WORK16050864",
+//	"ProductID": "2.3220-S2011-9010",
+//	"ProcessID": "12",
+//	"ProcessName": "轴承室",
+//	"RandomNo": "PB0012",
+//	"StartState": 3,
+//	"OperationFlag": 1,
+//	"ReportFlag": null,
+//	"EditFlag": 1
+//},
+//{
+//	"ID": 588,
+//	"FinterID": "WORK16050864",
+//	"ProductID": "2.3220-S2011-9010",
+//	"ProcessID": "13",
+//	"ProcessName": "标准组装",
+//	"RandomNo": "PB0012",
+//	"StartState": 3,
+//	"OperationFlag": 2,
+//	"ReportFlag": null,
+//	"EditFlag": 0
+//}
+			],
 		},
 		methods:{
-			caclulateResult:function(item){
-				
-				console.info("caclulateResult====================>>>>>>>>>>>>>>>");
-				console.info(item);
-		    	var tolerance=0;
-		    	var result2=0;
-		    	if(item.InputFormID==1){		    		
-			    	if(item.ResultRaw){
-						tolerance = item.ResultRaw;
-						if(item.PermitMinus!=undefined && item.PermitMinus!=null && tolerance<item.PermitMinus
-						|| item.PermitPlus!=undefined && item.PermitPlus!=null && tolerance>item.PermitPlus 
-							){
-							item.ngFlag=true;
-						}else{
-							item.ngFlag=false;
-						}
-			    	}
-			    	item.Result=tolerance;
-		    	}else{
-		    		var itemList=[{ID:0,ResultRaw:0},{ID:0,ResultRaw:0},{ID:0,ResultRaw:0}]
-		    		var tempIndex=0;
-		    		for(var i=0;i<this.assembleList.length;i++){
-		    			if(this.assembleList[i].ItemID==item.ItemID){
-		    				itemList[tempIndex]=this.assembleList[i];
-		    				tempIndex++;
-		    			}
-		    		}
-		    		tolerance = parseInt(itemList[0].ResultRaw==''?0:itemList[0].ResultRaw)-parseInt(itemList[1].ResultRaw==''?0:itemList[1].ResultRaw);
-		    		if(itemList[2].ResultRaw==undefined || itemList[2].ResultRaw==null ){
-		    			itemList[2].ResultRaw=0;
-		    		}
-					if(item.PermitMinus!=undefined && item.PermitMinus!=null || item.PermitPlus!=undefined && item.PermitPlus!=null 
-						){
-						var minus=parseInt(item.PermitMinus)+parseInt(itemList[2].ResultRaw==''?0:itemList[2].ResultRaw);
-						var plus=parseInt(item.PermitPlus)+parseInt(itemList[2].ResultRaw==''?0:itemList[2].ResultRaw);
-						if(tolerance<minus || tolerance> plus){
-							itemList[0].ngFlag=true;
-							itemList[1].ngFlag=true;
-							itemList[2].ngFlag=true;
-						}else{							
-							itemList[0].ngFlag=false;
-							itemList[1].ngFlag=false;
-							itemList[2].ngFlag=false;
-						}
-					}else{
-						itemList[0].ngFlag=false;
-						itemList[1].ngFlag=false;
-						itemList[2].ngFlag=false;
-					}
-					itemList[0].Result=itemList[0].ResultRaw;
-					itemList[1].Result=itemList[1].ResultRaw;
-					itemList[2].Result=itemList[2].ResultRaw;
-		    	}
-		    },
-			getMeasureCL:function(Result){
-		    	var cl = 'mui-switch mui-switch-green mui-switch-ok mui-active';
-		    	if(Result=='0'){
-		    		cl = 'mui-switch mui-switch-green mui-switch-ok mui-active';
-		    	}else{
-		    		cl = 'mui-switch mui-switch-green mui-switch-ok';
-		    	}
-		    	return cl;
-		    },
-		    changeMeterMeasure:function(item){
-				//console.info(event.detail)
-				//console.info(item);
-				if(event.detail.isActive){
-					item.Result=0;
-					item.ngFlag=false;
-				}else{
-					item.Result=1;
-					item.ngFlag=true;
-				}
-				//console.info(JSON.stringify(vm_task_input_meter.meterItemList));
-			}
+			getStatus:function(item){
+//				0:未开工 1:已开工 2:已完成 3:已审核
+				 if(item.OperationFlag==0){
+				 	return "未开工";
+				 }else if(item.OperationFlag==1){
+				 	return "已开工";
+				 }else if(item.OperationFlag==2){
+				 	return "已完成";
+				 }else if(item.OperationFlag==3){
+				 	return "已审核";
+				 }
+				 
+		    },  
 		}
 	});
  
@@ -234,115 +224,64 @@
 		var PrintTime =  $.query.get("PrintTime");
 		var ProductName =  $.query.get("ProductName");
 		var ProcessID =  $.query.get("ProcessID");
-		vm_assemble_list.userInfo.LoginUser=LoginUser;
-		vm_assemble_list.userInfo.LoginNumber=LoginNumber;
-		vm_assemble_list.userInfo.FinterID=FinterID;//任务单号
-		vm_assemble_list.userInfo.FNumber=ProductID;//图号
-		vm_assemble_list.userInfo.RandomNo=RandomNo;//机号
-		vm_assemble_list.userInfo.PrintTime=PrintTime;//标签打印时间
-		vm_assemble_list.userInfo.ProductName=ProductName;//品名
-		vm_assemble_list.userInfo.ProcessID=ProcessID;//品名	  
+		vm_assemble_task_list.userInfo.LoginUser=LoginUser;
+		vm_assemble_task_list.userInfo.LoginNumber=LoginNumber;
+		vm_assemble_task_list.userInfo.FinterID=FinterID;//任务单号
+		vm_assemble_task_list.userInfo.FNumber=ProductID;//图号
+		vm_assemble_task_list.userInfo.RandomNo=RandomNo;//机号
+		vm_assemble_task_list.userInfo.PrintTime=PrintTime;//标签打印时间
+		vm_assemble_task_list.userInfo.ProductName=ProductName;//品名
+		vm_assemble_task_list.userInfo.ProcessID=ProcessID;//品名	  
  
+//		app.createState(vm_assemble_task_list.userInfo);
 
  
-		var userInfo = vm_assemble_list.userInfo;
-		vm_assemble_list.taskSearchInfo.data=""+JSON.stringify(userInfo);
-			app.postAssembleList(vm_assemble_list.taskSearchInfo,function(data){
+		var userInfo = vm_assemble_task_list.userInfo;
+		vm_assemble_task_list.taskSearchInfo.data=""+JSON.stringify(userInfo);
+			app.postAssembleList(vm_assemble_task_list.taskSearchInfo,function(data){
 			if(data.code==1){
 				var dataList = data.data; // 
 				console.info(dataList);
-				vm_assemble_list.assembleList=[];
-				
-				var assembleList = JSON.parse(dataList);
-				var currentItemID='';
-				for(var i=0;i<assembleList.length;i++){
-						var assembleInfo = assembleList[i];
-						assembleInfo.ngFlag=true;
-						assembleInfo.Result=0;
-						assembleInfo.ResultRaw='';
-						if(currentItemID!=assembleInfo.ItemID){
-							currentItemID=assembleInfo.ItemID;
-							if(assembleInfo.InputFormID<4){
-								assembleInfo.rowSpan=assembleInfo.InputFormID;
-							}else{
-								assembleInfo.rowSpan=1;
-								assembleInfo.Result=1;
-							}
-						}else{
-							assembleInfo.rowSpan=0;
-						}
-						vm_assemble_list.assembleList.push(assembleInfo);
-					}
-				setTimeout(function () {
-						mui('.mui-switch')['switch']();
-					},300);
-//					
+				vm_assemble_task_list.assembleTaskList=[];				
+				vm_assemble_task_list.assembleTaskList = JSON.parse(dataList);
 			}else{
 				mui.toast(data.message);
-			}
-			// 模拟测试数据。
-//			var assembleList=[];
-//			 assembleList.push({
-//				'ID': 1,'ProcessName': '工段1','InputFormID': 4,'ItemID': 1,'ItemName': '宽度','Unit': 'MM','PermitMinus': -0.01000,'PermitPlus': 0.01000,CheckResult:'轴承内径', 'UserName': 'bb','Result': 0,'CheckTime': '2017-10-10',
-//			});
-//			assembleList.push({
-//				'ID': 2,'ProcessName': '工段1','InputFormID': 4,'ItemID': 2,'ItemName': '宽度','Unit': 'MM','PermitMinus': -0.01000,'PermitPlus': 0.01000,CheckResult:'轴承内径', 'UserName': 'bb','Result': 1,'CheckTime': '2017-10-10',
-//			});
-//			assembleList.push({
-//				'ID': 3,'ProcessName': '工段1','InputFormID': 2,'ItemID': 3,'ItemName': '宽度','Unit': 'MM','PermitMinus': -0.01000,'PermitPlus': 0.01000,CheckResult:'轴承内径', 'UserName': 'bb','Result': "",'CheckTime': '2017-10-10',
-//			});
-//			assembleList.push({
-//				'ID': 3,'ProcessName': '工段1','InputFormID': 2,'ItemID': 3,'ItemName': '宽度','Unit': 'MM','PermitMinus': -0.01000,'PermitPlus': 0.01000,CheckResult:'轴承外径', 'UserName': 'bb','Result': "",'CheckTime': '2017-10-10',
-//			});
-//			assembleList.push({
-//				'ID': 3,'ProcessName': '工段1','InputFormID': 1,'ItemID': 4,'ItemName': '宽度','Unit': 'MM','PermitMinus': -0.01000,'PermitPlus': 0.01000,CheckResult:'轴承内径', 'UserName': 'bb','Result': "",'CheckTime': '2017-10-10',
-//			});
-//			assembleList.push({
-//				'ID': 3,'ProcessName': '工段1','InputFormID': 3,'ItemID': 5,'ItemName': '宽度','Unit': 'MM','PermitMinus': -1,'PermitPlus': 1,CheckResult:'轴承内径', 'UserName': 'bb','Result': "",'CheckTime': '2017-10-10',
-//			});
-//			assembleList.push({
-//				'ID': 3,'ProcessName': '工段1','InputFormID': 3,'ItemID': 5,'ItemName': '宽度','Unit': 'MM','PermitMinus': -1,'PermitPlus': 1,CheckResult:'轴承内径', 'UserName': 'bb','Result': "",'CheckTime': '2017-10-10',
-//			});
-//			assembleList.push({
-//				'ID': 3,'ProcessName': '工段1','InputFormID': 3,'ItemID': 5,'ItemName': '宽度','Unit': 'MM','PermitMinus': -1,'PermitPlus': 1,CheckResult:'轴承内径', 'UserName': 'bb','Result': "",'CheckTime': '2017-10-10',
-//			});
-//			
-//			
-//			 
-					
-			
+			}  
 		});
-		
-		
-		
 	    mui.back=function(){
 		 console.info("back>>>>>>>>>>>>"); 
 		 nativeMethod.toActivity("check");
-		}; 
-		
-		
-		
+		};
 	});
 	
+	function submitAssembleTask(item){
+		mui.toast("hi");
+	}
 	
+	
+	function openTaskDetail(item){
+		item.PrintTime=vm_assemble_task_list.userInfo.PrintTime;
+		app.setPageParam("$selectAssembleTaskItem",item);
+		window.location.href="assemble_detail.html";
+	}
 	
 	function saveMeterInput(){
-		var searchData={LoginUser:vm_assemble_list.userInfo.LoginUser,LoginNumber:vm_assemble_list.userInfo.LoginNumber};
+		var searchData={LoginUser:vm_assemble_task_list.userInfo.LoginUser,LoginNumber:vm_assemble_task_list.userInfo.LoginNumber};
 		var ID=[];
 		var Result=[];
 		var Error=[];
-		for(var i=0;i<vm_assemble_list.assembleList.length;i++){
-			ID.push(vm_assemble_list.assembleList[i].ID);
-			Result.push(vm_assemble_list.assembleList[i].Result);  
-			Error.push(vm_assemble_list.assembleList[i].ngFlag?1:0);
+		for(var i=0;i<vm_assemble_task_list.assembleTaskList.length;i++){
+			ID.push(vm_assemble_task_list.assembleTaskList[i].ID);
+			Result.push(vm_assemble_task_list.assembleTaskList[i].Result);  
+			Error.push(vm_assemble_task_list.assembleTaskList[i].ngFlag?1:0);
 		}
 		searchData.ID=ID;
 		searchData.Result=Result;
 		searchData.Error=Error;
-		vm_assemble_list.taskSearchInfo.command="save";
-		vm_assemble_list.taskSearchInfo.data=""+JSON.stringify(searchData);
-		app.postAssembleList(vm_assemble_list.taskSearchInfo,function(data){
-			if(data.code==1){ 
+		vm_assemble_task_list.taskSearchInfo.command="save";
+		vm_assemble_task_list.taskSearchInfo.data=""+JSON.stringify(searchData);
+		app.postassembleTaskList(vm_assemble_task_list.taskSearchInfo,function(data){
+			if(data.code==1){
 				 console.info("back");
 				 mui.back();
 			}
