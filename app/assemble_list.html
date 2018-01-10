@@ -109,11 +109,11 @@
 		 		<th>状态</th>
 		 		<th>操作</th>
 		 	</tr>
-		 	<tr v-bind:class="item.OperationFlag == 0?'tr_content2_d':'tr_content2'" v-for="(item,index) in assembleTaskList">
+		 	<tr  class="tr_content2" v-for="(item,index) in assembleTaskList">
 				<!--<td  >{{item.FinterID}}</td>-->
 				<td>{{index+1}}</td>
 				<td style="padding: 10px;">
-		 			 <a class="btn_b" v-if="item.OperationFlag!=0"  @tap="openTaskDetail(item)">查看</a>
+		 			 <a class="btn_b" v-if="item.OperationFlag!=0"  @tap="viewTaskDetail(item)">查看</a>
 		 		</td>
 				<!--<td  >{{item.ProductID}}</td>-->
 				<!--<td  >{{item.ProcessID}}</td>-->
@@ -121,7 +121,7 @@
 				<td  >{{item.RandomNo}}</td>
 				  
 				
-				<td  >{{getStatus(item)}}</td>
+				<td :class="getStatusCss(item)" >{{getStatus(item)}}</td>
 		 		 
 		 		<td style="padding-left: 10px;">
 		 			 <a class="btn_g" v-if="item.OperationFlag==2" @tap="submitAssembleTask(item)">提交</a> 
@@ -197,6 +197,18 @@
 //	"OperationFlag": 2,
 //	"ReportFlag": null,
 //	"EditFlag": 0
+//},
+//{
+//	"ID": 588,
+//	"FinterID": "WORK16050864",
+//	"ProductID": "2.3220-S2011-9010",
+//	"ProcessID": "13",
+//	"ProcessName": "标准组装",
+//	"RandomNo": "PB0012",
+//	"StartState": 3,
+//	"OperationFlag": 0,
+//	"ReportFlag": null,
+//	"EditFlag": 0
 //}
 			],
 		},
@@ -214,6 +226,19 @@
 				 }
 				 
 		    },  
+			getStatusCss:function(item){
+//				0:未开工 1:已开工 2:已完成 3:已审核
+				 if(item.OperationFlag==0){
+				 	return "td_0";
+				 }else if(item.OperationFlag==1){
+				 	return "td_1";
+				 }else if(item.OperationFlag==2){
+				 	return "td_2";
+				 }else  {
+				 	return "td_3";
+				 }
+				 
+		    }, 
 		}
 	});
  
@@ -257,11 +282,30 @@
 		};
 	});
 	
-	function submitAssembleTask(item){
-		mui.toast("hi");
+	function submitAssembleTask(item){ 
+		var searchData={
+			LoginUser:vm_assemble_task_list.userInfo.LoginUser,
+			LoginNumber:vm_assemble_task_list.userInfo.LoginNumber,
+			FinterID:item.FinterID,
+			FNumber:item.ProductID,
+			RandomNo:item.RandomNo,
+		}; 
+		vm_assemble_task_list.taskSearchInfo.command="report";
+		vm_assemble_task_list.taskSearchInfo.data=""+JSON.stringify(searchData);
+		app.postAssembleList(vm_assemble_task_list.taskSearchInfo,function(data){
+			if(data.code==1){
+				 console.info("back");
+				 mui.back();
+			}
+			mui.toast(data.message);
+		});
 	}
 	
 	
+	function viewTaskDetail(item){
+		item.EditFlag=0;
+		openTaskDetail(item)
+	}
 	function openTaskDetail(item){
 		item.PrintTime=vm_assemble_task_list.userInfo.PrintTime;
 		app.setPageParam("$selectAssembleTaskItem",item);

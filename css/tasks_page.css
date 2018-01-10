@@ -31,15 +31,22 @@ table{
 	background: #ffffff;
 	border-bottom: 1px solid #CCCCCC;
 }
-.tr_content2_d{
-	height: 4.5em; 
-	font-size: 0.85em;
-	background: #cccccc;
-	border-bottom: 1px solid #CCCCCC;
-}
 .tr_content2 td{
 	text-align: center;
 }
-.tr_content2_d td{
+.tr_content2 .td_0{
+	background: #DDDDDD;
 	text-align: center;
 }
+.tr_content2 .td_1{
+	background: #f7c0e1;
+	text-align: center;
+}
+.tr_content2 .td_2{
+	background: #a4f1b1;
+	text-align: center;
+}
+.tr_content2 .td_3{
+	text-align: center;
+}
+
