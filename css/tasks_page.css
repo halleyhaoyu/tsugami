@@ -31,7 +31,15 @@ table{
 	background: #ffffff;
 	border-bottom: 1px solid #CCCCCC;
 }
+.tr_content2_d{
+	height: 4.5em; 
+	font-size: 0.85em;
+	background: #cccccc;
+	border-bottom: 1px solid #CCCCCC;
+}
 .tr_content2 td{
 	text-align: center;
 }
-
+.tr_content2_d td{
+	text-align: center;
+}
