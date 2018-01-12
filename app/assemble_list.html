@@ -260,10 +260,9 @@
 		vm_assemble_task_list.userInfo.PrintTime=PrintTime;//标签打印时间
 		vm_assemble_task_list.userInfo.ProductName=ProductName;//品名
 		vm_assemble_task_list.userInfo.ProcessID=ProcessID;//品名	  
- 
-//		app.createState(vm_assemble_task_list.userInfo);
 
- 
+		app.createState(vm_assemble_task_list.userInfo);
+
 		var userInfo = vm_assemble_task_list.userInfo;
 		vm_assemble_task_list.taskSearchInfo.data=""+JSON.stringify(userInfo);
 			app.postAssembleList(vm_assemble_task_list.taskSearchInfo,function(data){
