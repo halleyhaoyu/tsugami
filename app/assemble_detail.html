@@ -112,7 +112,7 @@
 						 {{item.Result==0?'OK':'NG'}}
 					</div>
 		 		</td>
-		 		<td>{{item.UserName}}/{{item.CheckTime}}/{{item.UserID}}</td>
+		 		<td>{{item.UserName}}/{{item.CheckTime}}</td>
 		 		
 		 	</tr>
 		 </table>
@@ -178,14 +178,14 @@
 		    				tempIndex++;
 		    			}
 		    		}
-		    		tolerance = parseInt(itemList[0].ResultRaw==''?0:itemList[0].ResultRaw)-parseInt(itemList[1].ResultRaw==''?0:itemList[1].ResultRaw);
+		    		tolerance = app.sub(parseInt(itemList[0].ResultRaw==''?0:itemList[0].ResultRaw),parseInt(itemList[1].ResultRaw==''?0:itemList[1].ResultRaw)) ;
 		    		if(itemList[2].ResultRaw==undefined || itemList[2].ResultRaw==null ){
 		    			itemList[2].ResultRaw=0;
 		    		}
 					if(item.PermitMinus!=undefined && item.PermitMinus!=null || item.PermitPlus!=undefined && item.PermitPlus!=null 
 						){
-						var minus=parseInt(item.PermitMinus)+parseInt(itemList[2].ResultRaw==''?0:itemList[2].ResultRaw);
-						var plus=parseInt(item.PermitPlus)+parseInt(itemList[2].ResultRaw==''?0:itemList[2].ResultRaw);
+						var minus= app.add(parseInt(item.PermitMinus),parseInt(itemList[2].ResultRaw==''?0:itemList[2].ResultRaw)) ;
+						var plus=app.add( parseInt(item.PermitPlus),parseInt(itemList[2].ResultRaw==''?0:itemList[2].ResultRaw));
 						if(tolerance<minus || tolerance> plus){
 							itemList[0].ngFlag=true;
 							itemList[1].ngFlag=true;
@@ -327,8 +327,16 @@
 //				'ID': 3,'ProcessName': '工段1','InputFormID': 3,'ItemID': 5,'ItemName': '宽度','Unit': 'MM','PermitMinus': -1,'PermitPlus': 1,CheckResult:'轴承内径', 'UserName': 'bb','Result': "",'CheckTime': '2017-10-10',
 //				UserID:null,UserName:'aaa',Result:0
 //			});
-			
-			 		
+//			
+//			 	 
+			 	
+			 	
+			 	
+			 	
+			 	
+			 	
+			 	
+			 	
 			
 		});
 		

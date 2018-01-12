@@ -168,7 +168,7 @@
 		    	var tolerance=0;
 		    	var result2=0;
 		    	if(item.ResultRaw){
-					tolerance = item.ResultRaw/1000;
+					tolerance = app.div(item.ResultRaw,1000);
 					if(this.checkInputDetail.ToleranceMinus!=undefined && this.checkInputDetail.ToleranceMinus!=null && tolerance<this.checkInputDetail.ToleranceMinus
 					|| this.checkInputDetail.TolerancePlus!=undefined && this.checkInputDetail.TolerancePlus!=null && tolerance>this.checkInputDetail.TolerancePlus 
 						){
@@ -178,7 +178,7 @@
 					}
 		    	}
 		    	if(this.checkInputDetail.Base!=undefined || this.checkInputDetail.Base!=null){
-		    		 result2 =tolerance+this.checkInputDetail.Base ;
+		    		 result2 =app.add(tolerance,this.checkInputDetail.Base)  ;
 		    	}
 		    	item.Result=result2;
 		    },
@@ -258,7 +258,7 @@
 			}
 			
 			
-//				vm_task_input_meter.meterItemList.push({MeasureCL:1,Result:'46.111',Model:'11',ngFlag:false});
+//				vm_task_input_meter.meterItemList.push({MeasureCL:1,Result:'46.111',,Model:'11',ngFlag:false});
 //				vm_task_input_meter.meterItemList.push({MeasureCL:2,Result:'0',Model:'22',ngFlag:false});
 //				vm_task_input_meter.meterItemList.push({MeasureCL:3,Result:'456',Model:'33',ngFlag:false});
 //				vm_task_input_meter.meterItemList.push({MeasureCL:2,Result:'1',Model:'44',ngFlag:true});
