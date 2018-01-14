@@ -159,10 +159,10 @@
 		    	var tolerance=0;
 		    	var result2=0;
 		    	if(item.InputFormID==1){		    		
-			    	if(item.ResultRaw){
+			    	if(item.ResultRaw!=undefined){
 						tolerance = Number(item.ResultRaw);
-						if(item.PermitMinus!=undefined && item.PermitMinus!=null &&  tolerance < Number(item.PermitMinus)
-						|| item.PermitPlus!=undefined && item.PermitPlus!=null &&  tolerance > Number(item.PermitPlus) 
+						if(item.PermitMinus!=undefined && item.PermitMinus!==null &&  tolerance < Number(item.PermitMinus)
+						|| item.PermitPlus!=undefined && item.PermitPlus!==null &&  tolerance > Number(item.PermitPlus) 
 							){
 							item.ngFlag=true;
 						}else{
@@ -179,14 +179,14 @@
 		    				tempIndex++;
 		    			}
 		    		}
-		    		tolerance = app.sub(parseInt(itemList[0].ResultRaw==''?0:itemList[0].ResultRaw),parseInt(itemList[1].ResultRaw==''?0:itemList[1].ResultRaw)) ;
-		    		if(itemList[2].ResultRaw==undefined || itemList[2].ResultRaw==null ){
+		    		tolerance = app.sub(parseInt(itemList[0].ResultRaw===''?0:itemList[0].ResultRaw),parseInt(itemList[1].ResultRaw===''?0:itemList[1].ResultRaw)) ;
+		    		if(itemList[2].ResultRaw==undefined || itemList[2].ResultRaw===null ){
 		    			itemList[2].ResultRaw=0;
 		    		}
-					if(item.PermitMinus!=undefined && item.PermitMinus!=null || item.PermitPlus!=undefined && item.PermitPlus!=null 
+					if(item.PermitMinus!=undefined && item.PermitMinus!==null || item.PermitPlus!=undefined && item.PermitPlus!==null 
 						){
-						var minus= app.add(parseInt(item.PermitMinus),parseInt(itemList[2].ResultRaw==''?0:itemList[2].ResultRaw)) ;
-						var plus=app.add( parseInt(item.PermitPlus),parseInt(itemList[2].ResultRaw==''?0:itemList[2].ResultRaw));
+						var minus= app.add(parseInt(item.PermitMinus),parseInt(itemList[2].ResultRaw===''?0:itemList[2].ResultRaw)) ;
+						var plus=app.add( parseInt(item.PermitPlus),parseInt(itemList[2].ResultRaw===''?0:itemList[2].ResultRaw));
 						if(tolerance<minus || tolerance> plus){
 							itemList[0].ngFlag=true;
 							itemList[1].ngFlag=true;
@@ -294,7 +294,7 @@
 					var assembleInfo = assembleList[i];
 					assembleInfo.ngFlag=true;
 					//assembleInfo.Result=0;
-					assembleInfo.ResultRaw=assembleInfo.Result==null?'':assembleInfo.Result;
+					assembleInfo.ResultRaw=assembleInfo.Result===null?'':assembleInfo.Result;
 					if(currentItemID!=assembleInfo.ItemID){
 						currentItemID=assembleInfo.ItemID;
 						if(assembleInfo.InputFormID<4){
