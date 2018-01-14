@@ -52,7 +52,7 @@
 	}
 	
 	.btn_b{
-		float: left;
+		/*float: left;*/
 		display: block;
 	    width: 5em;
 	    height: 2.5em;
@@ -63,7 +63,7 @@
 	    color: #0062CC;
 	}
 	.btn_g{
-		float: left;
+		/*float: left;*/
 		display: block;
 	    width: 5em;
 	    height: 2.5em;
@@ -101,18 +101,18 @@
 		 	<tr class="tr_title">
 				<!--<th>任务单号</th>-->
 				<th>序号</th>
-				<th></th>
+				<th style="width: 7em;">查看</th>
 		 		<!--<th>图号</th>-->
 		 		<!--<th>工段号</th>-->
 		 		<th>工段名称</th>
 		 		<th>机号</th>
-		 		<th>状态</th>
-		 		<th>操作</th>
+		 		<th >状态</th>
+		 		<th  >操作</th>
 		 	</tr>
 		 	<tr  class="tr_content2" v-for="(item,index) in assembleTaskList">
 				<!--<td  >{{item.FinterID}}</td>-->
 				<td>{{index+1}}</td>
-				<td style="padding: 10px;">
+				<td style="padding: 10px; text-align: center;">
 		 			 <a class="btn_b" v-if="item.OperationFlag!=0"  @tap="viewTaskDetail(item)">查看</a>
 		 		</td>
 				<!--<td  >{{item.ProductID}}</td>-->
@@ -123,7 +123,7 @@
 				
 				<td :class="getStatusCss(item)" >{{getStatus(item)}}</td>
 		 		 
-		 		<td style="padding-left: 10px;">
+		 		<td style="padding-left: 10px; text-align: center;">
 		 			 <a class="btn_g" v-if="item.OperationFlag==2" @tap="submitAssembleTask(item)">提交</a> 
 		 			 <a class="btn_b" v-if="item.EditFlag==1" @tap="openTaskDetail(item)">录入</a>
 		 		</td>
@@ -162,7 +162,7 @@
 				}
 			,
 			assembleTaskList:[
-//			 {
+//{
 //	"ID": 565,
 //	"FinterID": "WORK16050864",
 //	"ProductID": "2.3220-S2011-9010",
@@ -304,7 +304,13 @@
 	
 	function viewTaskDetail(item){
 		item.EditFlag=0;
-		openTaskDetail(item)
+		openTaskView(item)
+	}
+	
+	function openTaskView(item){
+		item.PrintTime=vm_assemble_task_list.userInfo.PrintTime;
+		app.setPageParam("$selectAssembleTaskItemView",item);
+		window.location.href="assemble_view.html";
 	}
 	function openTaskDetail(item){
 		item.PrintTime=vm_assemble_task_list.userInfo.PrintTime;
