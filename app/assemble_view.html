@@ -109,7 +109,7 @@
 					  <div class="mui-switch-handle"></div>
 					</div>
 		 			<div v-if="item.InputFormID==4 && (selectTaskInfo.EditFlag==0 || (item.LoginNumber!=null && item.LoginNumber!=userInfo.LoginNumber )) ">
-						 {{item.Result==0?'OK':'NG'}}
+						  {{item.CheckDTTM == null?'':(item.Result==0?'OK':'NG')}}
 					</div>
 		 		</td>
 		 		<td>{{item.UserName}}/{{item.CheckDTTM}}</td>
