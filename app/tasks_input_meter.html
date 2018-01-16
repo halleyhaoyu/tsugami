@@ -167,20 +167,35 @@
 				console.info(item);
 		    	var tolerance=0;
 		    	var result2=0;
-		    	if(item.ResultRaw){
+		    	if(item.ResultRaw!=undefined){
 					tolerance = app.div(item.ResultRaw,1000);
-					if(this.checkInputDetail.ToleranceMinus!=undefined && this.checkInputDetail.ToleranceMinus!=null && tolerance<this.checkInputDetail.ToleranceMinus
-					|| this.checkInputDetail.TolerancePlus!=undefined && this.checkInputDetail.TolerancePlus!=null && tolerance>this.checkInputDetail.TolerancePlus 
+					if(this.checkInputDetail.ToleranceMinus!=undefined && this.checkInputDetail.ToleranceMinus!==null && tolerance< Number(this.checkInputDetail.ToleranceMinus) 
+					|| this.checkInputDetail.TolerancePlus!=undefined && this.checkInputDetail.TolerancePlus!==null && tolerance> Number(this.checkInputDetail.TolerancePlus )
 						){
 						item.ngFlag=true;
 					}else{
 						item.ngFlag=false;
 					}
 		    	}
-		    	if(this.checkInputDetail.Base!=undefined || this.checkInputDetail.Base!=null){
+		    	if(this.checkInputDetail.Base!=undefined || this.checkInputDetail.Base!==null){
 		    		 result2 =app.add(tolerance,this.checkInputDetail.Base)  ;
 		    	}
 		    	item.Result=result2;
+		    },
+			caclulateResultInit:function(item){				
+				console.info("caclulateResultInit====================>>>>>>>>>>>>>>>");
+				console.info(item);
+		    	var tolerance=0.0;
+		    	if(item.Result!=undefined && item.Result!==null){
+					tolerance = app.sub(item.Result,this.checkInputDetail.Base);
+					if(this.checkInputDetail.ToleranceMinus!=undefined && this.checkInputDetail.ToleranceMinus!==null && tolerance< Number(this.checkInputDetail.ToleranceMinus) 
+					|| this.checkInputDetail.TolerancePlus!=undefined && this.checkInputDetail.TolerancePlus!==null && tolerance> Number(this.checkInputDetail.TolerancePlus )
+						){
+						item.ngFlag=true;
+					}else{
+						item.ngFlag=false;
+					}
+		    	} 
 		    },
 			getMeasureCL:function(Result){
 		    	var cl = 'mui-switch mui-switch-green mui-switch-ok mui-active';
@@ -245,7 +260,11 @@
 				for(var i=0;i<AllList.length;i++){
 					for(var j=0;j<selectTaskInputDetailItems.length;j++){
 						if(AllList[i].Model==selectTaskInputDetailItems[j].Model){
-							AllList[i].ngFlag=(AllList[i].MeasureCL==2 && AllList[i].Result==1)?true:false;
+							if(AllList[i].MeasureCL==2){
+								AllList[i].ngFlag=( AllList[i].Result==1)?true:false;
+							}else if(AllList[i].MeasureCL==1){
+								vm_task_input_meter.caclulateResultInit(AllList[i]);
+							}
 							vm_task_input_meter.meterItemList.push(AllList[i]);
 						}
 					}
@@ -258,7 +277,7 @@
 			}
 			
 			
-//				vm_task_input_meter.meterItemList.push({MeasureCL:1,Result:'46.111',,Model:'11',ngFlag:false});
+//				vm_task_input_meter.meterItemList.push({MeasureCL:1,Result:'46.111',Model:'11',ngFlag:false});
 //				vm_task_input_meter.meterItemList.push({MeasureCL:2,Result:'0',Model:'22',ngFlag:false});
 //				vm_task_input_meter.meterItemList.push({MeasureCL:3,Result:'456',Model:'33',ngFlag:false});
 //				vm_task_input_meter.meterItemList.push({MeasureCL:2,Result:'1',Model:'44',ngFlag:true});
