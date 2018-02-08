@@ -132,8 +132,8 @@
 					item.ngFlag=item.Result==1?true:false;
 					sRtn=item.Result==1?css2:css1;
 				}else if(item.Base!=undefined && item.Base!=null ){
-					if(item.ToleranceMinus!=undefined && item.ToleranceMinus!=null && (item.ToleranceMinus+item.Base)>item.Result
-						|| item.TolerancePlus!=undefined &&item.TolerancePlus!=null && (item.TolerancePlus+item.Base)<item.Result
+					if(item.ToleranceMinus!=undefined && item.ToleranceMinus!=null && app.add(item.ToleranceMinus,item.Base)>Number(item.Result)
+						|| item.TolerancePlus!=undefined &&item.TolerancePlus!=null && app.add(item.TolerancePlus,item.Base)<Number(item.Result)
 					){
 						item.ngFlag=true;
 						sRtn=css2;
