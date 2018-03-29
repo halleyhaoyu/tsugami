@@ -140,7 +140,7 @@
 //	    function onResizeWindow(){
 //	        $("#inputContent").css("width",$(window).width()-92);
 //	    }
-  	 
+  	var proc_flag = 0;
   	var vm_assemble_task_list = new Vue({
 		el: '#assemble_task_list_content',
 		data: {
@@ -282,6 +282,13 @@
 	});
 	
 	function submitAssembleTask(item){ 
+		//alrady processing return
+		if(proc_flag == 1)
+		{
+			mui.toast("处理中...");
+			return;
+		}
+		proc_flag = 1;
 		var searchData={
 			LoginUser:vm_assemble_task_list.userInfo.LoginUser,
 			LoginNumber:vm_assemble_task_list.userInfo.LoginNumber,
@@ -297,6 +304,7 @@
 				 console.info("back");
 				 mui.back();
 			}
+			proc_flag = 0;
 			mui.toast(data.message);
 		});
 	}
